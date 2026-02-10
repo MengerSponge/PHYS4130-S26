@@ -26,14 +26,20 @@ You're ready for a little more sophistication.
 ### Rough Draft (primary assignment and writeup, no extensions)
 
 > [!IMPORTANT]
-> Beginning of class on ???
+> Beginning of class on Thursday, Feb 12
 
 ### Final Submission
 
 > [!IMPORTANT]
-> Beginning of class on ???
+> Beginning of class on Fat Tuesday, Feb 17
 
 ## Programming specification:
+
+> [!IMPORTANT]
+> If you're using Python (which I recommend), try to stick to Numpy, Matplotlib, Scipy, and Pandas. Check with me before incorporating a weird library.
+
+> [!TIP]
+> If your program runs long and needs a progress bar, check out the TQDM library.
 
 ### Adaptive integration: Trapezoidal Rule
 
