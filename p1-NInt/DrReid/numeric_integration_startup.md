@@ -26,12 +26,12 @@ You're ready for a little more sophistication.
 ### Rough Draft (primary assignment and writeup, no extensions)
 
 > [!IMPORTANT]
-> Beginning of class on Tuesday, Feb 10
+> Beginning of class on Thursday, Feb 12
 
 ### Final Submission
 
 > [!IMPORTANT]
-> Beginning of class on Thursday, Feb 12
+> Beginning of class on Fat Tuesday, Feb 17
 
 ## Programming specification:
 
