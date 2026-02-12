@@ -13,6 +13,7 @@ To run the code.py script open the command prompt from the directory you have th
 % document implementation of algortihms
 Here is a breakdown and explanations of important code segments:
 
+```python
 def leftpoint(f,a,b,N):
     mysum = 0
     h = f
@@ -56,3 +57,4 @@ def quad(a, b, N):
     x = ((b-a)*roots/2)+(a+b)/2
     dx_over_du = 2/(b-a)
     return dx_over_du* np.sum(weights*sin(x))
+```
