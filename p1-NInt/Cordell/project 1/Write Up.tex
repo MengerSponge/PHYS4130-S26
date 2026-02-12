@@ -1,4 +1,67 @@
+
 \documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{parskip}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{siunitx}
+\sisetup{separate-uncertainty=true}
+\usepackage{graphicx}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{float} 
+\usepackage[hidelinks]{hyperref}
+\usepackage[capitalise,nameinlink]{cleveref}
+\usepackage[backend=biber,style=ieee,sorting=nyt]{biblatex}
+
 \begin{document}
-Testing if new file updates pdf or creates a new pdf
+
+\section{Attribution}
+Numeric integrations NBs.
+
+\section{Timekeeping}
+Approx values
+
+Sunday: 2 hours\\
+I defined most of the functions I would need for the project and implemented the Trapezoid rule. Then I set up LaTeX.
+
+Monday: 0 hours
+
+Tuesday: 1.25 hours\\
+I worked on figuring out how to use github.
+
+Wednesday: 2.5 hours\\
+I implemented the Gaussian quadrature and plotted the Legendre polynomials.
+
+Thursday: 1 hour\\
+Write up.
+
+\section{Languages, Libraries, Lessons Learned}
+I wrote all of my code in python from start to finish. I tried my best to mostly work in code.py 
+so it would be easier to interpret my github commits, but I also used Code\_NB.py for the quality 
+of life that a notebook offers when it comes to things like debugging and running a segment of 
+code at a time. I also implemented various math functions from the numpy library such as np.sin, 
+np.abs (absolute value), and np.sum. I used pylab for plotting. Both of these libraries are pretty 
+standard because of their usefulness and simplicity, and I was already fairly familiar with them. 
+In addition, I used the scipy library as instructed for Legendre polynomials. I would consider this 
+pretty remarkable as I did not have to calculate them myself which would be a pain. Meanwhile, 
+numpy and pylab are pretty remarkable in their own way--- they come in handy very often.
+
+\section{Figures}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1.0\linewidth]{LegendrePolynomials.png}
+  \caption{There are 16 subplots of Legendre polynomials \(P_{i}\), \(P_{j}\), and \(P_{i} \cdot P_{j}\) for i and j in the range 1-4. The area under the curve can be observed for 
+  each of the i=j subplots on the diagonal as well as the i \(\neq\) j subplots off diagonal. The areas under the i = j curves look to be approximately 1. Meanwhile, the areas under the i 
+  \(\neq\) j seem to be about 0. This is the visualization of the integral of \(P_{i} \cdot P_{j}\) from -1 to 1 equals the kroenecker delta function.}
+  \label{fig:LegendrePolyomials}
+\end{figure}
+\section{Extensions}
+
 \end{document}
