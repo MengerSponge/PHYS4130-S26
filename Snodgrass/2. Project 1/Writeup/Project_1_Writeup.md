@@ -27,7 +27,7 @@ meta:
 - Books
   - Who has books anymore?!
 - AI
-  - Much more modern approach. I asked ChatGPT on several occasions to suggest Python functions and their results. Such as condensing plots, formatting graphs, and loop syntax...
+  - Much more modern approach. I asked ChatGPT on several occasions to suggest Python functions and to explain their results; such as condensing plots, formatting graphs, and loop syntax...
 
 ## Timekeeping
 
