@@ -1,0 +1,20 @@
+PWD c:\Users\16152\OneDrive - Tennessee Tech University\Documents\GitHub\PHYS4130-S26\p1-NInt\DrReid\Project 1
+INPUT C:\Users\16152\AppData\Local\MiKTeX\miktex\data\le\pdftex\pdflatex.fmt
+INPUT c:\Users\16152\OneDrive - Tennessee Tech University\Documents\GitHub\PHYS4130-S26\p1-NInt\DrReid\Project 1\Write Up.tex
+OUTPUT Write Up.log
+INPUT C:\Users\16152\AppData\Local\Programs\MiKTeX\tex\latex\base\article.cls
+INPUT C:\Users\16152\AppData\Local\Programs\MiKTeX\tex\latex\base\article.cls
+INPUT C:\Users\16152\AppData\Local\Programs\MiKTeX\tex\latex\base\size10.clo
+INPUT C:\Users\16152\AppData\Local\Programs\MiKTeX\tex\latex\base\size10.clo
+INPUT C:\Users\16152\AppData\Local\Programs\MiKTeX\tex\latex\base\size10.clo
+INPUT C:\Users\16152\AppData\Local\Programs\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT C:\Users\16152\AppData\Local\Programs\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT .\Write Up.aux
+INPUT .\Write Up.aux
+INPUT Write Up.aux
+OUTPUT Write Up.aux
+OUTPUT Write Up.pdf
+INPUT C:\Users\16152\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
+INPUT Write Up.aux
+INPUT C:\Users\16152\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmr10.pfb
+INPUT C:\Users\16152\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmr10.pfb
