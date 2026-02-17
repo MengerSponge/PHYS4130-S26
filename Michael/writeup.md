@@ -113,7 +113,7 @@ Where the quotient, Q, and the remainder, R, each have a degree less than n.
 
 Then, the next result is a consequecnce of orthogonality. For the legendre polynomial of degree l and any polynomial Q of degree less than l, then
 ```math
-\int_{-1}^{1} P_l(x)Q(x) \ dx
+\int_{-1}^{1} P_l(x)Q(x) dx
 ```
 This happenes because the legendre polynomials of degree less than l form an orthogonal basis for the set of polynomials with degree less than l on the interval [-1,1].
 
@@ -142,7 +142,7 @@ S(x) = Q(x)P_n(x) + R(x)
 ```
 Where Pn is the nth degree legendre polynomial. Therefore,
 ```math
-\int_{-1}^{1} S(x) dx = \int_{-1}^{1} Q(x)P_n(x) \dx + \int_{-1}^{1} R(x) \ dx
+\int_{-1}^{1} S(x) dx = \int_{-1}^{1} Q(x)P_n(x) dx + \int_{-1}^{1} R(x) dx
 ```
 Orthogonality gurantees that the integral of Q(x)Pn(x) goes to 0, so we obtain
 ```math
