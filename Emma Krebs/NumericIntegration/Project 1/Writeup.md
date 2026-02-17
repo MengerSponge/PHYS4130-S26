@@ -35,13 +35,13 @@ To do this, let us go a little more in depth with the trapezoid rule. We mention
 ```math
 I = \int_a^b f(x)\,dx
 ```
-
+\
 we can do
 
 ```math
 I_T = \frac{1}{2} \left( I_L + I_R\right) = \sum_{i=0}^{N-1} \frac{1}{2} \left[ f(a + ih) + f(a + ih + h) \right] 
 ```
-
+\
 
 In my code, I created the following definition
 
