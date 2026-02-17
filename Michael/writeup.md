@@ -75,7 +75,7 @@ As a refresher, the Legendre polynomials are a set of polynomials that are ortho
 The plots above visually demonstrate the orthogonality condition for the Legendre polynomials.
 
 ```math
-\int_{-1}^{1} P_n(x)\,P_m(x)\dx = \frac{2}{2n+1}\\delta_{nm}
+\int_{-1}^{1} P_n(x)\,P_m(x) \ dx = \frac{2}{2n+1}\\delta_{nm}
 ```
 
 In order to take advantage of the orthogonality conditon in building our algorithm, we want to transform our integral onto the interval [-1,1], which we will do now.
@@ -118,7 +118,7 @@ Where the quotient, Q, and the remainder, R, each have a degree less than n.
 
 Then, the next result is a consequecnce of orthogonality. For the legendre polynomial of degree l and any polynomial Q of degree less than l, then
 ```math
-\int_{-1}^{1} P_l(x)Q(x)\ dx
+\int_{-1}^{1} P_l(x)Q(x) \ dx
 ```
 This happenes because the legendre polynomials of degree less than l form an orthogonal basis for the set of polynomials with degree less than l on the interval [-1,1].
 
