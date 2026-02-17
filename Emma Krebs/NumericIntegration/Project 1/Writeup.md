@@ -116,6 +116,10 @@ This function definition is what passes the function, a, and b to the trapezoid_
 ### Legendre Polynomials
 -Talk about use of 
 
+
+
+
+
 ### Extension
 
 -Challenge problem 1 (talked about 2 in guassian quadrature above)
