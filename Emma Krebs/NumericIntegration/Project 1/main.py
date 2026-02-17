@@ -131,7 +131,7 @@ print("\nTest for Gaussian Quadrature with a = 1, b = 7, and x = 5")
 print("The starting point 1 becomes: ", u(1, 1, 7))
 print("The ending point 7 becomes: ", u(7, 1, 7))
 print("The test variable 5 becomes: ", u(5, 1, 7))
-print()
+print() # Cheap way to add space
 
 # For Legendre Polynomials
 x = np.linspace(-1, 1, 200) 
@@ -144,7 +144,7 @@ for i in range(4):
         y_2 = legendre(j+1)(x)
         axes[i, j].plot(x, y_1, label=f'P{i+1}')
         axes[i, j].plot(x, y_2, label=f'P{j+1}')
-        title = "P" + str(i+1) +", P" + str(j+1)+", P" + str(i+1) + "*P" + str(j+1)
+        title = f"P{i+1}, P{j+1}, P{i+1}*P{j+1}"
         axes[i, j].set_title(title, size=8)
         y_3, value = Legendre_multiplier(i, j, x)
         axes[i, j].plot(x, y_3, label=f'P{i+1}*P{j+1}')
@@ -153,7 +153,7 @@ for i in range(4):
         axes[i, j].set_ylabel('Legendre Value')
         axes[i, j].legend(fontsize=5)
 
-        print(f"The value of the integral P{i+1}*P{j+1} is {value} and simplified {round(value, 5)}")
+        print(f"P{i+1}*P{j+1} is {value} and simplified {round(value, 5)}")
 
 plt.tight_layout()
 plt.show()

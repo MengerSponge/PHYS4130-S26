@@ -114,7 +114,30 @@ This function definition is what passes the function, a, and b to the trapezoid_
 -You will probably add more to this after doing the challenege section.
 
 ### Legendre Polynomials
--Talk about use of 
+
+![Image](CompProject1Figure.png)
+
+The resulting integration from -1 to 1 for this is given in the following statement:
+
+P1*P1 is 0.6666666666666666 and simplified 0.66667
+P1*P2 is 0.0 and simplified 0.0
+P1*P3 is -8.326672684688674e-17 and simplified -0.0
+P1*P4 is 3.725320413912007e-16 and simplified 0.0
+P2*P1 is 0.0 and simplified 0.0
+P2*P2 is 0.4000000000000001 and simplified 0.4
+P2*P3 is 0.0 and simplified 0.0
+P2*P4 is -5.082739784612045e-16 and simplified -0.0
+P3*P1 is -8.326672684688674e-17 and simplified -0.0
+P3*P2 is 0.0 and simplified 0.0
+P3*P3 is 0.28571428571428603 and simplified 0.28571
+P3*P4 is 2.5425414289395475e-16 and simplified 0.0
+P4*P1 is 3.725320413912007e-16 and simplified 0.0
+P4*P2 is -5.082739784612045e-16 and simplified -0.0
+P4*P3 is 2.5425414289395475e-16 and simplified 0.0
+P4*P4 is 0.22222222222222263 and simplified 0.22222
+
+Thus, confirming that any integral P(i)*P(j) where i does not equal j is 0. 
+
 
 ### Extension
 
