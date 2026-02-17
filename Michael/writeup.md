@@ -176,7 +176,7 @@ So
 ```
 By mvoing an integral into the sum and equating terms, we at last determine a formula for the weights.
 ```math
-w_i = \int_{-1}^{1} L_i(x) \dx = \frac{2}{(1-x_i^2)P'_i(x_i)^2}
+w_i = \int_{-1}^{1} L_i(x) dx = \frac{2}{(1-x_i^2)P'_i(x_i)^2}
 ```
 Where that last equality is determined using algebra and properties of legendre polynomials. It is omitted here becausee it does not demonstrate the important ideas of Gaussian Quadrature. It is interesting that our weights are completley independent of our integrand. They only depend on the sample points, which are determined by the order of quadrature we have chosen. This can be seen from the defintion of the lagrange polynomials and the final formula obtained.
 
