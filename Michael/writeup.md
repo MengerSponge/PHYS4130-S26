@@ -75,7 +75,7 @@ As a refresher, the Legendre polynomials are a set of polynomials that are ortho
 The plots above visually demonstrate the orthogonality condition for the Legendre polynomials.
 
 ```math
-\int_{-1}^{1} P_n(x)P_m(x) \ dx = \frac{2}{2n+1}\ \delta_{nm}
+\int_{-1}^{1} P_n(x)P_m(x) dx = \frac{2}{2n+1}\ \delta_{nm}
 ```
 
 In order to take advantage of the orthogonality conditon in building our algorithm, we want to transform our integral onto the interval [-1,1], which we will do now.
