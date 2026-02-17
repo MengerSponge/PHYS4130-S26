@@ -126,7 +126,7 @@ They can be calculated using the formula
 ```math
 L_i(x) = \prod_{i \ne j} \frac{x-x_i}{x_i - x_j}
 \\
-x_i \text{ are the sampling points.}
+\; x_i \text{ are the sampling points.}
 \\
 L_i(x_j) = \delta_{ij}
 ```
