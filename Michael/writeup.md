@@ -30,10 +30,8 @@ def Simpson(f,a,b,N):
 ```
 Tha main algorithm of interest is Gaussian Quadrature. It is unique because a Gaussian Quadrature of order n will be exact for all polynomials of degree less than 2n. We will soon derive it, but first we should resfresh outselves on the Legndre polynomials. The Legendre polynomials are a set of polynomials that are orthogonal on the interval [-1,1]. The first four are plotted below, as well as their products. 
 
-![Legendre Polynomials](legendre.png "Plots of the first four Legendre Polynomials.")
-
 <figure>
-  <img src="legendre.png" alt="legendre polynomial plots" width="400">
+  <img src="legendre.png" alt="legendre polynomial plots" width="600">
   <figcaption><em>Figure 1:</em> These plots show the legendre polynomials in purple and gold. The products are the thin lines in blue..</figcaption>
 </figure>
 
