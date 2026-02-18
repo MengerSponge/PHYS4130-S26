@@ -276,7 +276,7 @@ Now, let the points of our quadrature x<sub>0</sub>(x), x<sub>1</sub>(x),...,x<s
 ```math
 w_k = \int_a^b P_k(x)w(x)\,dx
 ```
-where P<sub>k</sub>(x) is the k<sup>th</sup>(x) basis polynomial. Then, we can write an arbitrary polynomial (of degree &le 2n +1) as the divisible decomposition 
+where P<sub>k</sub>(x) is the k<sup>th</sup> basis polynomial. Then, we can write an arbitrary polynomial (of degree &le 2n +1) as the divisible decomposition 
 ```math
 f(x) = p(x)u_{n+1}(x) + r(x)
 ```
@@ -296,7 +296,7 @@ Applying our quadratic algorithm, we find
 Q[f] = \sum_{k=0}^n w_kf(x_k)  = \sum_{k=0}^n w_k(p(x_k)u_{n+1}(x_k)+r(x_k))
     = \sum_{k=0}^nw_kr(x_k)
 ```
-These p terms vanish because we let x_k be the roots of u<sub>n+1</sub>(x), so
+These p terms vanish because we let x<sub>k</sub> be the roots of u<sub>n+1</sub>(x), so
 ```math
 u_{n+1}(x_k) = 0 \implies p(x_k)u_{n+1}(x_k) = 0
 ```
@@ -304,7 +304,7 @@ Q[f] approximates the integral of f(x)w(x), but given our f(x) definition we fin
 ```math
 Q[f] = \sum_{k=0}^n w_kf(x_k) = \int_a^b r(x))w(x)\,dx = I[f]
 ```
-Therefore, this is an exact integration for an f $\in$ **P**<sub>2n+1</sub>. This proof is complete once you let w(x) = 1 for Legendre polynomials (or u<sub>k</sub> = P<sub>k</sub>). The PDF notes that you can do a similar method to derive other quadrature polynomial estimates. Therefore, the optimal points for a quassian quadrature are the zeros of P<sub>n</sub> because it approximates to an exact integration. $\blacksquare$
+Therefore, this is an exact integration for an f $\in$ **P**<sub>2n+1</sub>. This proof is complete once you let w(x) = 1 for Legendre polynomials (or u<sub>k</sub> = P<sub>k</sub>). The PDF notes that you can do a similar method to derive other quadrature polynomial estimates. Therefore, the optimal points for a Guassian quadrature are the zeros of P<sub>n</sub> because it approximates to an exact integration. $\blacksquare$
 
 ## Languages, Libraries, Lessons Learned
 
