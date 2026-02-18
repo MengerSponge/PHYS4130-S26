@@ -102,3 +102,33 @@ As shown in Fig. 2, the Guassian quadrature reaches e-4 error at N=16384, wherea
 
 ![Extension plot](../Project%201/Extension1.png)
 Figure 2: Output of Extension 1 code. It shows the number of subintervals, Guassian quadrature estimate, and error before and after applying the substitution.
+
+# Questions
+
+## Attribution
+I used the first two notebooks for the trapezoid rule and Simpson's rule. I was already familiar with these enough that I didn't really have to use any extra resources to learn about them for this project. However, I had never heard of the Guassian quadrature before. I was able to obtain a fair conceptual understanding of what it does by asking you about it in class.
+
+## Timekeeping
+Approximate values 
+
+Sunday: 2 hours
+I defined most of the functions I would need for the project and implemented the Trapezoid rule. Then I set up LaTeX, but ended up using markdown in the end.
+
+Monday: 0 hours
+
+Tuesday: 1.25 hours
+I spent all of this time learning how to use github properly: pull requests, merging, etc.
+
+Wednesday: 2.5 hours
+I implemented the Gaussian quadrature and plotted the Legendre polynomials.
+
+Thursday: 2 hours
+I started working on the write up. I explained the background theory for the trapezoid rule and Simpson's rule. I wrote the instructions to run code.py and I picked out and highlighted segments of code.
+
+Monday(2/17): 4 hours
+I had an exam in an online class Sunday and another exam today (monday) so I spent the weekend and this morning preparing for those. I wrote the code to perform Extension 1. I talked about the backgroud theory for the Gaussian quadrature in my write up. I explained the previously highlighted segments of code in my write up. I wrote the Analysis, Extension 1, and Questions sections of my write up.
+
+## Languages, Libraries, Lessons Learned
+Language: I used python from start to finish.
+Libraries: I used numpy, scipy, and pylab. I would say these are all pretty remarkable in their own rights. Numpy and pylab make life easy when doing math and plotting. I use these very frequently. Meanwhile, scipy made it a walk in the park to find the roots and their weights of the Legendre polynomials. I do not use scipy as frequently as numpy and pylab, but I have used it a few times before. Overall, I would say numpy makes life a little bit easier on a frequent occasion, whereas scipy (at least to my experience) makes life a whole lot easier but only once in a while.
+Lessons learned: The biggest thing I learned about from this project was the Gaussian quadrature. I think I stated this previously, but I had never heard of it before and now I feel like I have a fair conceptual understanding of what it does, and I wrote code that pulls it off. Another thing I think is worth mentioning, although it isn't super physics related or anything crazy, is that I learned how to code in markdown e.i. formatting tables, importing figures, fence blocks, and niche syntax. 
