@@ -100,5 +100,5 @@ Table 1: Trapezoid and Guassian quadrature estimates of Integral (3) at N subint
 # Extension 1
 As shown in Fig. 2, the Guassian quadrature reaches e-4 error at N=16384, whereas after the substitution it reaches e-15 error at N=16. Furthermore, there is a trend where the error decreases by $\frac{1}{2}$ as N increases as powers of 2 before the substitution. Following this trend, we would expect for it to reach e-10 error around N=$2^{31}$. I believe the reason that this is the case has to do with the fact that it is integrating over a singularity, and applying the substitution gets rid of the singularity. Without getting too much into the theory behind Gaussian quadratures (mainly because I don't know all the details lol), this makes sense because polynomials do not have singularities. After all, the Guassian quadrature approximates the integrand as a polynomial.
 
-![Extension plot](Extension1.png)
+![Extension plot](../Project%201/Extension1.png)
 Figure 2: Output of Extension 1 code. It shows the number of subintervals, Guassian quadrature estimate, and error before and after applying the substitution.
