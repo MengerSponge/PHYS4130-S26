@@ -7,9 +7,8 @@ meta:
 ---
 # Numeric Integration Project
 
-## Explanation of the code
+## Trapezoid approximation
 
-### Trapezoid approximation
 The trapezoidal approximation was developed in earlier notebooks and builds off the left endpoint, right endpoint, and midpoint rules. Those three rules were studied regarding Riemann sums, a building block for integration. Using the Riemann sum method, integrals can be approximated by taking finer and finer slices of the area under the function's plot. 
 
 Where the left endpoint, right endpoint, and midpoint rules differ from the trapezoid approximation is the form of the 'top' of the 'slice'. The trapezoid uses both the left and the right sides to approximate the same slope as the function. This method cuts out a large portion of over- or underestimations made by square rectangles. 
@@ -30,13 +29,51 @@ def traprule(f, a, b, N):
 ```
 This function divides the range into N subsections, finds the left and right endpoints for each subsection, finds the value at both endpoints for each subsection, and then calculates the area for each subsection. The area is calculated by averaging the subsection area calculated by the left and right endpoints. The N areas are added and returned as the integral.
 
+### Performance of the traprule
 This function was used with a *very* high **N** value to get a good approximation of the integral to compare against later. The integral was approximately:
 ```math
 \int_0^2 \mathrm{d}x\, \sin^2\left(\sqrt{100x}\right) = 1.0057025428257
 ```
----
-### Legendre polynomial orthogonality
-Any task involving Legendre polynomials will always be made easier if the requirement to calculate them is waived. Thankfully, we were allowed to use a library that handed us the Legendre polynomials straight away.
+  **Table 1.** Performance of trapezoidal approximation.
+  | N         | Integral              | Error                |
+  |-----------|-----------------------|----------------------|
+  | 2         | 0.79594662529161      | 2.0975591753378 e-01 |
+  | 4         | 0.69837008702424      | 3.0733245580114 e-01 |
+  | 8         | 1.03497028020385      | 2.9267737378463 e-02 |
+  | 16        | 0.94670012038502      | 5.9002422440363 e-02 |
+  | 32        | 0.97846523867870      | 2.7237304146686 e-02 |
+  | 64        | 0.99790966934232      | 7.7928734830655 e-03 |
+  | 128       | 1.00368931558769      | 2.0132272376980 e-03 |
+  | 256       | 1.00519511618492      | 5.0742664047077 e-04 |
+  | 512       | 1.00557542778294      | 1.2711504245244 e-04 |
+  | 1024      | 1.00567074790213      | 3.1794923253337 e-05 |
+  | 2048      | 1.00569459308443      | 7.9497409624096 e-06 |
+  | 4096      | 1.00570055532724      | 1.9874981440626 e-06 |
+  | 8192      | 1.00570204594715      | 4.9687823322486 e-07 |
+  | 16384     | 1.00570241860583      | 1.2421955486452 e-07 |
+  | 32768     | 1.00570251177073      | 3.1054654403562 e-08 |
+  | 65536     | 1.00570253506197      | 7.7634143558214 e-09 |
+  | 131072    | 1.00570254088478      | 1.9406036777525 e-09 |
+  | 262144    | 1.00570254234049      | 4.8490100823528 e-10 |
+  | 524288    | 1.00570254270441      | 1.2097522983368 e-10 |
+  | 1048576   | 1.00570254279539      | 2.9993785233273 e-11 |
+  | 2097152   | 1.00570254281814      | 7.2484240831727 e-12 |
+  | 4194304   | 1.00570254282383      | 1.5623058402525 e-12 |
+  | 8388608   | 1.00570254282525      | 1.4077627952247 e-13 |
+  | 16777216  | 1.00570254282560      | 2.1493917756743 e-13 |
+  | 100000000 | 1.00570254282572      | Control              |
+
+### Significance of these calculations
+It is apparent from the table above that the trapezoidal rule is inefficient for approximating complicated integrals. The following sections of the writeup demonstrate and somewhat explain a much more efficient integral approximation technique developed by Gauss. The resulting algorithm provides a efficient, accurate, and fast method for approximating problematic integrals. 
+
+
+
+## Legendre polynomial orthogonality
+
+The Legendre polynomials are ubiquitously important as one of the fundamental sets of orthogonal polynomials. The orthogonality allows us to represent functions as a sum of legendre polynomials using an approach resembling the Fourier series expansion, but this time we use the Legendre polynomials as the orthogonal basis functions. 
+
+Before discussing the Gaussain quadrature method in detail, it is important to refresh yourself on the Legendre polynomials and their properties. Any task involving Legendre polynomials will always be made easier if the requirement to calculate them is waived. Thankfully, we were allowed to use a library that handed us the Legendre polynomials straight away.
+
 ```python
 from scipy.special import legendre
 ```
@@ -47,10 +84,14 @@ This function streamlined the process of calculating polynomials and multiplying
   <figcaption><strong>Figure 1.</strong> 4×4 grid of Legendre polynomials and their products.</figcaption>
 </figure>
 
+As you may have noticed, the interval for these functions is [-1, 1]. This is an important characteristic that will affect how these polynomials can be used. 
+
 ---
 
-### Gaussian quadrature
-Gaussian quadrature is easiest over the bounds [-1, 1]. Therefore, a simple function conversion is required to use the algorithm. Below, I map the integrand and the bounds to an equivalent function over [-1, 1]. 
+## Gaussian quadrature
+
+### Legendre basis and integral setup
+Gaussian quadrature uses the Legendre polynomials to construct a series of orthogonal polynomials each with a weighted contribution. The first step when using this method is to define the integrand over the same interval, [-1, 1], that the Legendre polynomials form a basis on. However, most integrals will not be over these bounds, and instead over the bounds [a, b]. Therefore, a simple function conversion is required to use the algorithm. Below, I map the integrand and the bounds to an equivalent function over [-1, 1]. 
 ```math
 u(x) = \frac{2x-a-b}{b-a}
 ```
@@ -76,94 +117,116 @@ u(b-a)+a+b = 2x
 x = \frac{u(b-a)}{2} + \frac{a+b}{2}
 ```
 ```math
-dx = du * \frac{b-a}{2}
+\mathrm{d}x = \mathrm{d}u * \frac{b-a}{2}
 ```
 For this problem, [a, b] = [0,2] and therefore 
 ```math
-dx = du
-```
-```math
+\mathrm{d}x = \mathrm{d}u \\
 x = u+1
 ```
+The function f(x), which is being integrated, is:
+```math
+f(x) = \sin^2\left(\sqrt{100x}\right)
+```
+This function is therefore transformed to g(u) so the algorithm can be easily applied
+```math
+g(u) = \sin^2\left(\sqrt{100(u+1)}\right)
+```
+The final integral transformation is:
+```math
+\boxed{\int_0^2 \sin^2\left(\sqrt{100x}\right)\,\mathrm{d}x
+\;\Longrightarrow\;
+\int_{-1}^1 \sin^2\left(\sqrt{100(u+1)}\right)\,\mathrm{d}u}
+```
 
+---
+### Algorithm explanation
 To approximate the integral, Gaussian quadrature is laid out in the following algorithm
 ```math
 \int_{-1}^{1} \mathrm{d}x\, g(x) \approx \sum_{i=1}^N c_{N,i} g\left(x_{N,i}\right)
 ```
 
-Where the points $`x_{N,i}`$ are the roots of the Nth order Legendre polynomial, which are found using a function discussed below. 
+Where the points $`x_{N,i}`$ are the roots of the Nth order Legendre polynomial, which are given by the **scipy** function  discussed below. The weights are given by the following integral:
 
-The weights are given by the following integral:
 ```math
 c_{i,n}=\frac{1}{P_n^{\prime}(x_{N,i})}\int_{-1}^1\frac{P_n(x)}{x-x_{N,i}} \mathrm{d}x
 ```
 
-The function f(x), which is being integrated, is:
-```math
-f(x) = \sin^2\left(\sqrt{100x}\right)
-```
-And transformed to g(u) so the algorithm can be easily applied
-```math
-g(u) = \sin^2\left(\sqrt{100(u+1)}\right)
-```
-Arguably, another function was even more useful than the Legendre polynomials library. 
+Scipy, arguably, provides a function even more useful than the Legendre polynomials library. 
 ```python
 import scipy as sp
 roots, weights = sp.special.roots_legendre(N)
 ```
-These special roots function not only returned the roots of the Legendre polynomial of order N, but also returned the weighting coefficient. Both of which are needed in the summation. All that is left to do is multiply and add. 
+This special roots function not only returned the roots of the Legendre polynomial of order N, but also returned the weighting coefficient. Both of which are needed in the summation given above. All that is left to do is multiply and add. 
 ```python
 def algorithm(N):
     roots, weights = sp.special.roots_legendre(N)
     return np.sum(weights * g(roots))
 ```
-Using this algorithm, the integral is approximated to an accuracy of $\epsilon=10^{-14}$ with N = 16. The efficiency is remarkable compared to the trapezoidal approximation, which required tens of millions of sub-intervals to get an accuracy of even $10^{-12}$.
+
+---
+### Algorithm performance
+Using this algorithm, the integral is approximated to an accuracy of $\epsilon=10^{-14}$ with N = 16. The efficiency is remarkable compared to the trapezoidal approximation, which required tens of millions of sub-intervals to get an accuracy of even $10^{-12}$. See the table below for the output of the Gaussian quadrature.
+
+  **Table 2.** Performance of Gaussian quadrature algorithm.
+  | N   | Approximation       | Signed Error          |
+  |-----|---------------------|-----------------------|
+  | 1   | 0.591917938186608   | 0.413784604639128     |
+  | 2   | 0.046812259051246   | 0.958890283774491     |
+  | 3   | 1.078855067763076   | -0.07315252493733     |
+  | 4   | 1.437300902844935   | -0.43159836001919     |
+  | 8   | 1.045246394223079   | -0.03954385139734     |
+  | 16  | 1.005702542825727   | 9.32587340685131 e-15 |
+  | 32  | 1.005702542825725   | 1.19904086659516 e-14 |
+  | 64  | 1.005702542825726   | 1.08801856413265 e-14 |
+  | 128 | 1.005702542825726   | 1.06581410364015 e-14 |
+  | 256 | 1.0057025428257265  | 1.02140518265514 e-14 |
+  |2048 | 1.0057025428257322  | 4.44089209850063 e-15 |
+
+
 
 ## Extension 1
-
-### Performing the change of variables
+###   Problem definition
 The integral given for the challenge is:
 ```math
-\int_0^2 \frac{y^2}{\sqrt{2-y}} \, dy
+\mathrm{Integral\,\, 1:}\,\,\,\int_0^2 \frac{y^2}{\sqrt{2-y}} \, \mathrm{d}y
 ```
-
-The substitution to be applied is: 
+Which converges to
 ```math
-y = 2\sin^2\theta
+\frac{\sqrt{8192}}{15} \Rightarrow 6.033977866125206
 ```
+
+Three methods of approximation are used and compared. A table with the results is show at the end. Each method is used to approximate the integral out to 10 digits of precision and their efficiency is compared in the table. 
+
+---
+### Change of variables
+To make this integral manageable, a change of variables in made below using:
 ```math
-dy = 4\sin\theta\cos\theta d\theta
+y = 2\sin^2\theta \\
+\mathrm{d}y = 4\sin\theta\cos\theta \mathrm{d}\theta
 ```
+**Performing the change of variables**
 
-Next, I need to transform the integrand:
-
-#### Numerator:
+Numerator:
 ```math
 y^2 = (2\sin^2\theta)^2 = 4\sin^4\theta
 
 ```
-#### Denominator: 
+Denominator: 
 ```math
-2 - y = 2 - 2\sin^2\theta = 2\cos^2\theta
-```
-```math
+2 - y = 2 - 2\sin^2\theta = 2\cos^2\theta \\
 \sqrt{2-y} = \sqrt{2}\cos\theta
 ```
 
-#### Changing the limits
-
+#### **Changing the limits**
 When y = 0:
 ```math
-0 = 2\sin^2\theta
-```
-```math
+0 = 2\sin^2\theta\\
 \theta = 0
 ```
 When y = 2:
 ```math
-2 = 2\sin^2\theta
-```
-```math
+2 = 2\sin^2\theta\\
 \theta = \frac{\pi}{2}
 ```
 So the new limits are
@@ -171,52 +234,47 @@ So the new limits are
 \theta \in [0, \tfrac{\pi}{2}]
 ```
 
-#### Substituting everything
+#### **Substituting**
 The integral becomes
 ```math
-\int_0^{\pi/2}\, \frac{4\sin^4\theta}{\sqrt{2}\cos\theta}\, 4\sin\theta\cos\theta\, d\theta
+\int_0^{\pi/2}\, \frac{4\sin^4\theta}{\sqrt{2}\cos\theta}\, 4\sin\theta\cos\theta\, \mathrm{d}\theta
 ```
 Which simplifies to:
 ```math
-\boxed{
-8\sqrt{2}\, \int_0^{\pi/2}  \sin^5\theta\, d\theta
-}
+\mathrm{Integral\,\, 2:}\,\,\,\boxed{  8\sqrt{2}\, \int_0^{\pi/2}  \sin^5\theta\, \mathrm{d}\theta }
 ```
 
 ---
-
-### Applying Simpson's Rule
-After the change of variables is made, only a short section of code in necessary to compute Simpson's rule for approximating integrals.
+### Simpson's Rule
+After the change of variables is made, only a short section of code in necessary to compute Simpson's rule for approximating integrals. (Simpson's rule was developed in a previous notebook. The function is given below but see previous notebooks for the theory behind it.)
 ```python
 def Simpson(integrand, a, b, N):            # Integral on the bounds [a, b]
     I_m = midpoint(integrand, a, b, N)      # Midpoint-rule approx
     I_t = traprule(integrand, a, b, N)      # Trapezoid-rule approx
     return (2*I_m + I_t) / 3 
 ```
-With **N** equal to 25, the approximation is accurate out to 10 significant figures
+With **N** equal to 25, the approximation is accurate out to 10 digits of precision.
 
 ---
-
-### Gaussian Quadrature
-The first step in Gaussian quadrature is to map the function onto [-1, 1]. This will need to be done for both the original integral and the change-of-variables integral. The general change of variables is:
+### Gaussian Quadrature (for 1 and 2)
+The first step in Gaussian quadrature is to map the function onto [-1, 1]. This will need to be done for both the original integral and the change-of-variables integral **(*Integral 1* and *Integral 2*)**. The general change of variables is:
 
 ```math
 x = \frac{b-a}{2}u + \frac{a+b}{2}
 ```
 ```math
-dx = \frac{b-a}{2} du
+dx = \frac{b-a}{2} \mathrm{d}u
 ```
 
 Therefore, the before-and-after relationship is:
 ```math
-\int_a^b f(x)\,dx = \frac{b-a}{2}\, \int_{-1}^{1}\, f\!\left(\frac{b-a}{2}u + \frac{a+b}{2}\right) du
+\int_a^b f(x)\,dx = \frac{b-a}{2}\, \int_{-1}^{1}\, f\!\left(\frac{b-a}{2}u + \frac{a+b}{2}\right) \mathrm{d}u
 ```
 
----
 
-#### Original Integral
+**Original Integral**
 ```math
-\int_0^2 \frac{y^2}{\sqrt{2-y}} \, dy
+\int_0^2 \frac{y^2}{\sqrt{2-y}} \, \mathrm{d}y
 ```
 Since the original range is [0, 2], the function is just offset by 1 from our needed range. Therefore, the scaling is a factor of 1. 
 
@@ -232,22 +290,23 @@ dy = dt
 
 Therefore,
 ```math
-\int_0^2 f(y)\,dy  =  \int_{-1}^{1} f(u+1)\,du
+\int_0^2 f(y)\,dy  =  \int_{-1}^{1} f(u+1)\,\mathrm{d}u
 ```
 Which is:
 ```math
-\int_0^2 \frac{y^2}{\sqrt{2-y}}\,dy  = 
-\int_{-1}^{1}\, \frac{(u+1)^2}{\sqrt{1-u}}\,du
+\int_0^2 \frac{y^2}{\sqrt{2-y}}\,\mathrm{d}y  = 
+\boxed{ \int_{-1}^{1}\, \frac{(u+1)^2}{\sqrt{1-u}}\,\mathrm{d}u }
 ```
+Briefly, the Gaussian quadrature algorithm is being applied to Integral 1, which has been transformed to fit the range of [-1, 1] requirement. The result of that computation is show in the table below.
 
 ---
 
-#### Transformed Integral
+**Transformed Integral**
 
 After substitution, we obtained
 
 ```math
-8\sqrt{2}\, \int_0^{\pi/2}\, \sin^5\theta \, d\theta
+8\sqrt{2}\, \int_0^{\pi/2}\, \sin^5\theta \, \mathrm{d}\theta
 ```
 With these bounds, the relation becomes
 
@@ -266,17 +325,26 @@ Therefore,
 
 ```math
 \int_0^{\pi/2} g(\theta)\,d\theta  =  
-\frac{\pi}{4}\, \int_{-1}^{1}\, g\!\left(\frac{\pi}{4}(u+1)\right) du
+\frac{\pi}{4}\, \int_{-1}^{1}\, g\!\left(\frac{\pi}{4}(u+1)\right) \mathrm{d}u
 ```
 Which is
 ```math
-8\sqrt{2}\int_0^{\pi/2} \sin^5\theta\,d\theta  =
-2\pi\sqrt{2}\, \int_{-1}^{1}\, \sin^5\!\left(\frac{\pi}{4}(u+1)\right) du
+8\sqrt{2}\int_0^{\pi/2} \sin^5\theta\,\mathrm{d}\theta  =
+\boxed{ \pi\sqrt{2}\, \int_{-1}^{1}\, \sin^5\!\left(\frac{\pi}{4}(u+1)\right) \mathrm{d}u }
 ```
+Briefly, the Gaussian quadrature algorithm is being applied to Integral 2, which has been transformed to fit the range of [-1, 1] requirement. The result of that computation is show in the table below.
 
 ---
+### N, Runtime, and Accuracy
+  **Table 3.** Comparison of numerical integration methods.
+  | Method              | N       | Approximation     | Error                   |
+  |---------------------|---------|-------------------|-------------------------|
+  | $\frac{\sqrt{8192}}{15}$ | -  | 6.033977866125206 | Actual Value            |
+  | Gauss Quadrature 1  | 10,000  | 6.033485338530997 | 0.0004925275942095908   |
+  | Simpson's Rule      | 46      | 6.033977866147473 | -2.226663298188214 e-11 |
+  | Gauss Quadrature 2  | 10      | 6.033977866125502 | -2.957634137601417 e-13 |
 
-#### N, Runtime, and Accuracy
+
 The Gaussian quadrature for the original integral was poor. The algorithm took a very long time (almost four minutes) to run with N = 100,000, and the result was only accurate out to four decimal places! Terribly inefficient. 
 
 The Gaussian quadrature for the change of variables integral was **much** better. The result compiled in 0 seconds and only required N = 9 for an accuracy of 10 significant figures. This beat the Simpson's rule for the changed variable integral, which required N = 25 for the same accuracy. 
@@ -316,4 +384,3 @@ After the full write-up and extensions are finished, the total time spent will b
 - I got more familiar with the syntax of Python, the libraries and their uses, and some functions for math, plotting, etc. 
 - Obviously, I learned about Gaussian quadrature and what a wonderful method of integration it is!
 - More interestingly than the program-specific topics, I had to practice program management, timekeeping, version control software, git-specific nuances, and more. I think that this project was a great learning curve for the rest of the course. 
-
