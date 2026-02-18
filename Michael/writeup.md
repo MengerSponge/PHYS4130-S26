@@ -137,7 +137,7 @@ So,
 ```math
 \int_{-1}^{1} R(x) \ dx = \int_{-1}^{1} \sum_{i=1}^{n} S(x_i)L_i(x)  \ dx = \sum_{i=1}^{n} w_i  S(x_i).
 ```
-By moving an integral into the sum and equating terms, we at last determine a formula for the weights.
+By moving the integral into the sum and equating terms, we at last determine a formula for the weights.
 ```math
 w_i = \int_{-1}^{1} L_i(x) dx = \frac{2}{(1-x_i^2)P'_i(x_i)^2}
 ```
