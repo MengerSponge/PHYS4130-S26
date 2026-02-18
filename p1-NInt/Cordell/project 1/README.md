@@ -19,7 +19,7 @@ where $`x_{N,i}`$ are the sample points chosen at the roots of the Legendre poly
 c_{i,n}=\frac{1}{P_n^{\prime}(x_{N,i})}\int_{-1}^1\frac{P_n(x)}{x-x_{N,i}} \mathrm{d}x                  (2)
 ```
 
-![My plot](LegendrePolynomials.png)
+![My plot](../Project%201/LegendrePolynomials.png)
 Figure 1: Legendre polynomials subplots of $`P_i`$, $`P_j`$, and $`P_i\cdot P_j`$. There are 16 subplots of Legendre polynomials for i and j in the range 1-4. The area under the curve can be observed for each of the i=j subplots on the diagonal as well as the i $`\neq`$ j subplots off diagonal. The areas under the i = j curves look to be approximately 1. Meanwhile, the areas under the i $`\neq`$ j seem to be about 0. This is the visualization of the integral of $`P_i\cdot P_j`$ from -1 to 1 equals the kroenecker delta function.
 
 ## Intructions
