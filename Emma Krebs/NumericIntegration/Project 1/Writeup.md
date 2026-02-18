@@ -103,7 +103,7 @@ This function definition is what passes the function, a, and b to the trapezoid_
 
 ### Gaussian Quadrature
 
-As we talked about in the first section, we discovered a better integration method through averaging the leftpoint and rightpoint methods. Now, consider Simpson's rule which fits a parabola using three points from a combination of the midpoint and trapezoid methods. This improved our efficency, but we can improve it even more by adjusting the sample points themselves. By mapping our original [a, b] range to [-1, 1], we can seek optimal x-coordinates at which to evaulate the given function through a weight function. This range is typically the best for Legendre and Chebyshev polynomials. In order to complete this mapping, we will use the following u-substitution:
+As we talked about in the first section, we discovered a better integration method through averaging the leftpoint and rightpoint methods. Now, consider Simpson's rule which fits a parabola using three points from a combination of the midpoint and trapezoid methods. This improved our efficency, but we can improve it even more by adjusting the sample points themselves. By mapping our original [a, b] range to [-1, 1], we can seek optimal x-coordinates at which to evaulate the given function through a weight function. This range is typically the best for Legendre and Chebyshev polynomials, which we will talk about in the next section. In order to complete this mapping, we will use the following u-substitution:
 
 ```math
 u=\frac{2x-a-b}{b-a}.
@@ -140,13 +140,13 @@ The starting point 1 becomes:  -1.0\
 The ending point 7 becomes:  1.0\
 The test variable 5 becomes:  0.3333333333333333
 
--You will probably add more to this after doing the challenege section.
-
 ### Legendre Polynomials
+
+
 
 ![Image](CompProject1Figure.png)
 
-Fig. 1) This is an image depicting the plots of two Legendre polynomials along with their multiplied equation, P(i)*P(j). The subgraphs start at P(1) and P(1) and increase in i and j along the rows and columns to create a 4x4 group of subplots ranging from P(1) to P(4).
+Fig. 1) This is an image depicting the plots of two Legendre polynomials along with their product, P(i)*P(j). The subgraphs start at P(1) and P(1) and increase in i and j along the rows and columns to create a 4x4 group of subplots ranging from P(1) to P(4).
 
 The resulting integration from -1 to 1 for this is given in the following statement:
 
@@ -170,9 +170,11 @@ The resulting integration from -1 to 1 for this is given in the following statem
 
 Thus, confirming that any integral P(i)*P(j) where i does not equal j is 0. 
 
+The Legendre's roots and weights are what will define Gaussian Quadrature. For example, the following 
 
 
-    P(x)                                              Roots                                            Weights
+
+        P(x)                                              Roots                                            Weights
     0     1                                              [0.0]                                              [2.0]
     1     2          [-0.5773502691896257, 0.5773502691896257]                                         [1.0, 1.0]
     2     3     [-0.7745966692414834, 0.0, 0.7745966692414834]  [0.5555555555555558, 0.8888888888888883, 0.555...
@@ -183,9 +185,12 @@ Thus, confirming that any integral P(i)*P(j) where i does not equal j is 0.
     3     4  [-0.8611363115940526, -0.3399810435848563, 0.3...  [0.3478548451374538, 0.6521451548625462, 0.652...
 
 
-### Extension
+### Extension 2: Challenge Boogaloo
 
--Challenge problem 1 (talked about 2 in guassian quadrature above)
+I chose to answer the following question:\
+Why are the optimal points for an $N$ order Gaussian quadrature the zeros of $P_N$?
+
+We can start 
 
 ## Languages, Libraries, Lessons Learned
 
@@ -199,7 +204,7 @@ As of 2/17/26, I have spent ~28 hours or so on this project.
 
 People Used:
 
-Cricket/Cordell recommending how to make 4x4 subplot table look better. Dr. Reid is also another contributor after I stole your code from the project's markdown file to make my header look nice.
+Cricket/Cordell recommending how to make 4x4 subplot table look better. Dr. Reid is also another contributor because I used your raw markdown file's syntax as a base for my equations.
 
 Websites Used:
 
@@ -210,6 +215,12 @@ https://cs357.cs.illinois.edu/textbook/assets/slides/03-Errors.pdf (New method f
 https://docs.scipy.org/doc/scipy/reference/generated/scipy.special.legendre.html (Legendre polynomials)
 https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html (More on axes and matplotlib)
 https://personal.math.ubc.ca/~israel/m210/lesson19.pdf (Double checked my error for the integration methods)
+
+All the following sources are for extension 2:
+https://en.wikipedia.org/wiki/Quadrature_(mathematics)
+https://people.math.wisc.edu/~chr/am205/notes/am205_gauss_quad.pdf
+https://mathworld.wolfram.com/GaussianQuadrature.html
+https://aalexan3.math.ncsu.edu/articles/gauss_quad.pdf
 
 Books Used:
 
