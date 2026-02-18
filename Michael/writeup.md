@@ -139,7 +139,9 @@ So,
 ```
 By moving the integral into the sum and equating terms, we at last determine a formula for the weights.
 ```math
+\boxed{
 w_i = \int_{-1}^{1} L_i(x) dx = \frac{2}{(1-x_i^2)P'_i(x_i)^2}
+}
 ```
 Where that last equality is determined using algebra and properties of Legendre polynomials. It is omitted here becausee it does not demonstrate the important ideas of Gaussian Quadrature. It is interesting that our weights are completley independent of our integrand. They only depend on the sample points, which are determined by the order of quadrature we have chosen. We therefore only ever have to calculate these roots and weights one time, and we can then reuse them at no additonal computational cost for future implementations.
 
