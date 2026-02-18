@@ -170,16 +170,27 @@ The resulting integration from -1 to 1 for this is given in the following statem
 
 Thus, confirming that any integral P(i)*P(j) where i does not equal j is 0. 
 
-The Legendre's roots and weights are what will define Gaussian Quadrature. For example, the following 
+This orthogonality property is what will allow us to define the Legendre's roots and weights as points for Gaussian Quadrature. It acts similar to Simpson's rule with how it weights points differently depending on the optimal method of minimizing error. The orthogonality property is important because Legendre polynomials are orthogonal to all polynomials of a lower degree. Using the roots as points means we can minimize this error because it is proportional to our polynomial roots, meaning any polynomial with a lower degree is 0 because of this orthogonality principle. Kind of similar to the step we took to get to the trapezoid rule by minimizing the leftpoint and rightpoint errors. Therefore, we can calculate exact polynomials for degrees of polynomials 2n-1 or less. From Dr. Reid's NumericReps file, we can write the approximation for an integral as the following summation:
+
+```math
+\int_{-1}^{1} \mathrm{d}x\, f(x) \approx \sum_{i=1}^N c_{N,i} f\left(x_{N,i}\right)
+```
+
+where the points $`x_{N,i}`$ are the roots of the Nth order legendre polynomial, and the weights are given by the following integral:
+
+```math
+c_{i,n}=\frac{1}{P_n^{\prime}(x_{N,i})}\int_{-1}^1\frac{P_n(x)}{x-x_{N,i}} \mathrm{d}x
+```
+
+As an additional source, the following diagram depicts the difference in weighting for points between the trapezoid, Simpson's, and Gaussian Quadrature rules:
 
 
+Fig. 2) The interpolation polynomials for various quadrature rules.
+
+An example of some of these roots and weights are given in the following table for the following Legendre polynomials one through four:
 
         P(x)                                              Roots                                            Weights
     0     1                                              [0.0]                                              [2.0]
-    1     2          [-0.5773502691896257, 0.5773502691896257]                                         [1.0, 1.0]
-    2     3     [-0.7745966692414834, 0.0, 0.7745966692414834]  [0.5555555555555558, 0.8888888888888883, 0.555...
-    3     4  [-0.8611363115940526, -0.3399810435848563, 0.3...  [0.3478548451374538, 0.6521451548625462, 0.652...
-    1     2          [-0.5773502691896257, 0.5773502691896257]                                         [1.0, 1.0]
     1     2          [-0.5773502691896257, 0.5773502691896257]                                         [1.0, 1.0]
     2     3     [-0.7745966692414834, 0.0, 0.7745966692414834]  [0.5555555555555558, 0.8888888888888883, 0.555...
     3     4  [-0.8611363115940526, -0.3399810435848563, 0.3...  [0.3478548451374538, 0.6521451548625462, 0.652...
@@ -221,6 +232,9 @@ https://en.wikipedia.org/wiki/Quadrature_(mathematics)
 https://people.math.wisc.edu/~chr/am205/notes/am205_gauss_quad.pdf
 https://mathworld.wolfram.com/GaussianQuadrature.html
 https://aalexan3.math.ncsu.edu/articles/gauss_quad.pdf
+https://phys.libretexts.org/Bookshelves/Astronomy__Cosmology/Celestial_Mechanics_(Tatum)/01%3A_Numerical_Methods/1.16%3A_Gaussian_Quadrature_-_Derivation
+https://en.wikipedia.org/wiki/Gaussian_quadrature#Gauss%E2%80%93Legendre_quadrature
+https://www.researchgate.net/figure/The-interpolation-polynomials-for-various-quadrature-rules-in-Section-5_fig1_338434277
 
 Books Used:
 
