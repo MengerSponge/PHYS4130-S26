@@ -8,8 +8,13 @@ Computational Physics @ TN Tech, Spring 2026
  3. [Workbook 3](p1-NInt/DrReid/NumericReps.ipynb): due Feb 5
  4. [Project 1](p1-NInt/DrReid/numeric_integration_startup.md): RD: Feb 12, Final Draft: Feb 17
 
-## Numeric Differentiation
- 1.  [Project 2](<p2-NDiff/P2-Numerical Differentiation and Machine Error.ipynb>)
+## [Numeric Differentiation](/p2-NDiff/)
+ 1. [Project 2](<p2-NDiff/P2-Numerical Differentiation and Machine Error.ipynb>)
+
+## [Differential Equations](/p3-ODEs/)
+ 1. [Workbook 1](<p3-ODEs/P3.1 ODEs Euler.ipynb>): due Jan 22
+ 2. [Workbook 2](<p3-ODEs/P3.2 ODEs Runge-Kutta.ipynb>): due Jan 29
+ 3. [Project 3](<p3-ODEs/ordinary_differential_equations_startup.md>)
 
 ## Diffusion
 
