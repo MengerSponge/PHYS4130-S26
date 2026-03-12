@@ -14,41 +14,7 @@ Original file is located at
 # import libraries
 import matplotlib.pyplot as plt
 import numpy as np
-import math
 from scipy.integrate import odeint, solve_ivp
-
-# integration functions from previous notebooks
-
-# RK2 Method
-def RK2(N_initial, tmin, tmax, nts, deriv):
-
-    # define initial variables
-    N = np.zeros(nts + 1)
-    N[0] = N_initial
-    t = np.linspace(tmin, tmax, nts + 1)
-    dt = t[1] - t[0]
-
-    # loop the first and second substep
-    for it in range(0, nts):
-        N_half = N[it] + (dt / 2) * deriv(N[it], t[it])
-        N[it+1] = N[it] + dt * deriv(N_half, t[it] + dt/2)
-
-    return t, N
-
-# Euler Method
-def Euler_solver(N_initial, tmin, tmax, nts, deriv):
-
-    # define initial variables
-    N = np.zeros(nts + 1)
-    N[0] = N_initial
-    t = np.linspace(tmin, tmax, nts + 1)
-    dt = t[1] - t[0]
-
-    # loop
-    for it in range(0,nts):
-        N[it+1] = N[it] + dt * deriv(N[it], t[it])
-
-    return t, N
 
 # Scipy Method (updated for SHO)
 def scipy_method(N_initial, tmin, tmax, nts, deriv):
@@ -71,12 +37,6 @@ def RK45_method(N_initial, tmin, tmax, nts, deriv):
   v = sol.y[1]
 
   return t, x, v
-
-"""Time Complexity: O(n), where n is (x-x0)/h.
-Auxiliary Space: O(1) as constant space for variables is being used
-
-source: https://www.geeksforgeeks.org/dsa/runge-kutta-4th-order-method-solve-differential-equation/
-"""
 
 # Verlet-velocity sympletic integrator
 
@@ -103,8 +63,6 @@ def verlet(N_initial, tmin, tmax, nts, deriv):
     v[i+1] = v_half + 0.5 * dt * a_new
 
   return t, x, v
-
-"""https://stackoverflow.com/questions/29009771/verlet-algorithm-implementation-in-python"""
 
 # For a simple harmonic oscillator not at rest, what shape will it trace out in phase space?
 
@@ -136,20 +94,10 @@ t_s, x_s, v_s = scipy_method(N_initial, tmin, tmax, nts, deriv_odeint)
 t_r, x_r, v_r = RK45_method(N_initial, tmin, tmax, nts, deriv_ivp)
 t_v, x_v, v_v = verlet(N_initial, tmin, tmax, nts, accel)
 
-# t_s, x_s, v_s = scipy_method(N_initial, tmin, tmax, nts, deriv_odeint)
-# m = 3
-# k = 1
-
-# t_r, x_r, v_r = RK45_method(N_initial, tmin, tmax, nts, deriv_ivp)
-# m = 2
-# k = 3
-
-# t_v, x_v, v_v = verlet(N_initial, tmin, tmax, nts, accel)
-
 # make the plots
 
-plt.plot(v_r, x_r, 'o', color = '#f37fb0', label = "RK4")
-plt.plot(v_v, x_v, color = '#61dbb0', label = "Verlet")
+plt.plot(v_r, x_r, color = '#f37fb0', label = "RK4", linewidth = 10)
+plt.plot(v_v, x_v, 'o', color = '#61dbb0', label = "Verlet")
 plt.plot(v_s, x_s, color = '#6316b0', label = "Scipy")
 plt.xlabel("Velocity (m/s)")
 plt.ylabel("Position (m)")
@@ -166,20 +114,20 @@ print("")
 
 # rewriting deriv and accel functions to fit damping term
 # derivative functions will need a damping term in the derivative
-def deriv_ivp(t, N):
+def nderiv_ivp(t, N):
     x, v = N
     dxdt = v
     dvdt = -(k/m)*x - (b/m)*v
     return [dxdt, dvdt]
 
-def deriv_odeint(N, t):
+def nderiv_odeint(N, t):
     x, v = N
     dxdt = v
     dvdt = -(k/m)*x - (b/m)*v
     return [dxdt, dvdt]
 
 # acceleration term will include velocity
-def accel(x, v):
+def naccel(x, v):
     return -(k/m)*x - (b/m)*v
 
 # updating verlet
@@ -205,8 +153,8 @@ def verlet(N_initial, tmin, tmax, nts, deriv):
   return t, x, v
 
 # everything else will stay the same, but with a b term added
-m = 5
-k = 7
+m = 1
+k = 3
 b = 0.2
 omega = np.sqrt(k/m)
 nts = 1024 # larger nts, better approximation
@@ -216,9 +164,9 @@ tmin = 0
 tmax = 100
 
 # call the integrators
-nt_s, nx_s, nv_s = scipy_method(N_initial, tmin, tmax, nts, deriv_odeint)
-nt_r, nx_r, nv_r = RK45_method(N_initial, tmin, tmax, nts, deriv_ivp)
-nt_v, nx_v, nv_v = verlet(N_initial, tmin, tmax, nts, accel)
+nt_s, nx_s, nv_s = scipy_method(N_initial, tmin, tmax, nts, nderiv_odeint)
+nt_r, nx_r, nv_r = RK45_method(N_initial, tmin, tmax, nts, nderiv_ivp)
+nt_v, nx_v, nv_v = verlet(N_initial, tmin, tmax, nts, naccel)
 
 # make the plots
 plt.plot(nv_r, nx_r, 'o', color = '#f37fb0', label = "RK4")
@@ -246,7 +194,7 @@ nE_v = 0.5*m*nv_v**2 + 0.5*k*nx_v**2
 nE_s = 0.5*m*nv_s**2 + 0.5*k*nx_s**2
 
 # make the plots
-plt.plot(t_r, E_r, 'o', color = '#f37fb0', label = "RK4")
+plt.plot(t_r, E_r, color = '#f37fb0', label = "RK4")
 plt.plot(t_v[:nts], E_v[:nts], color = '#61dbb0', label = "Verlet")
 plt.plot(t_s, E_s, color = '#6316b0', label = "Scipy")
 plt.xlabel("Time (s)")
@@ -266,5 +214,6 @@ plt.legend()
 plt.show()
 print("")
 
+print("The total mechanical energy decreases over time for the oscillator, though it still oscillates around the origin.")
 print("The total mechanical energy decreases over time for the damped oscillator, like a decaying exponential.")
 print("")
