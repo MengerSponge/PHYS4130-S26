@@ -80,7 +80,7 @@ How long did you spend on this assignment? If you didn't keep an accurate log, a
 
 ### Languages, Libraries, Lessons Learned
  1. If you changed languages, please remark on that. Otherwise I'll assume you started and finished your work in Python.
- 2. 2. What libraries did you use in your submission? Were any of them remarkable? Great to use, super annoying to use, etc?
+ 2. What libraries did you use in your submission? Were any of them remarkable? Great to use, super annoying to use, etc?
 
 > [!NOTE]
 > This section probably shouldn't more than a few sentences long. Record what you learned and move on!
