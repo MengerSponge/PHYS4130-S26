@@ -144,14 +144,19 @@ def Yoshida(X0, Y0, tmin, tmax, nts, du_dt):
 ```
 ## Simple Harmonic Oscillator
 
-The first system that we will investigate the simple harmonic oscillator with and without damping. To simplify the equations, the equillbrium position is taken to be the origin so that erroneous terms accounting for the length of the spring do not have to be accounted for. 
+The first system that we will investigate the simple harmonic oscillator with and without damping. To simplify the equations, the equillbrium position is taken to be the origin so that erroneous terms accounting for the length of the spring do not have to be accounted for. Newton's Second Law gives the following equations of motion.
 
 (LaTex to depict the ODE for the system, then show the coupled 1st order system)
 
 ```math
-\ddot{x} + \frac{b}{m} \dot{x} + \frac{k}{m} x = 0
+\ddot{x} = \frac{c}{m} \dot{x} + \frac{k}{m} x
 ```
+Here, k is the spring constant, m is the mass, and c is the damping strength. For the integrators, we need to express this system as a coupled system of first order equation. 
 
+```math
+\dot{x} = y \\
+\dot{y} = -\frac{b}{m} y - \frac{k}{m} x
+```
 For the way my code is configured, we need to express the derivatives of the system in a specfic way.
 ```python
 
