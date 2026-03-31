@@ -179,23 +179,29 @@ Let's first look at how the this system evolves over time with no damping for th
 
 <div align="center">
   <img src="SHO_Phase.png" alt="Undamped Trajectories" width="600">
-  <p><em>Figure 1:</em> Plots of the phasae space trajecotry for the undamped SHO for three different integrators.</p>
+  <p><em>Figure 1:</em> Plots of the phasae space trajecotries for the undamped SHO for three different integrators.</p>
 </div>
 
 We can see that this traces out an ellipse in phase space, which is what we expect for the analytic solution for system. However, these methods are not outputting the exact same trajectory in phase space. You can resolve the difference by zooming in the plot range, but this is a good oppurtunitty to see how the total mechanical enerergy of this system evolves with the different methods. Physically, we know that it should be conserved because spring forces are conservative, but that is not exactly the case for these methods.
 
 <div align="center">
   <img src="SHO_Energy.png" alt="Undamped Energies" width="600">
-  <p><em>Figure 1:</em> Plots of the energies for the undamped SHO for three different integrators.</p>
+  <p><em>Figure 2:</em> Plots of the energies for the undamped SHO for three different integrators.</p>
 </div>
 
 This shows a large distinction among the methods! We see that the symplectic method oscillates near the true energy, whle the RK4(5) and LSODA methods accumulate error over time that causes them to drift from the true solution. For that reason, the symplectic Veleocity Verlet might be considered better for this problem despite being a lower order method. Now, we can introduce damping to this system and see how that affects the numeriacl solutions. 
 
-(Show the phase space plots for the damped system )
+<div align="center">
+  <img src="SHO_Damped_Phase.png" alt="Damped Trajectories" width="600">
+  <p><em>Figure 3:</em> Plots of the phase space trajectories for the damped SHO for three different integrators.</p>
+</div>
 
 As expected, the system is now losing energy to viscous forces. This causes it to spiral down to the origin, which for this system is the state with no energy. We see the same kind of behavior for the energy of this system.
 
-(Show the energy vs time plots)
+<div align="center">
+  <img src="SHO_Damped_Energy.png" alt="Damped Energies" width="600">
+  <p><em>Figure 4:</em> Plots of the energy over time for the damped SHO for three different integrators.</p>
+</div>
 
 In this case, Velocity Verlet just behaves as a second order integrator. Therefore, it has lost the advantage it had over RK4(5) and LSODA.
 
