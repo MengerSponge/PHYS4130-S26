@@ -154,7 +154,7 @@ The first system that we will investigate the simple harmonic oscillator with an
 Here, k is the spring constant, m is the mass, and c is the damping strength. For the integrators, we need to express this system as a coupled system of first order equation. 
 
 ```math
-\dot{x} = y \
+\dot{x} = y \\\\
 \dot{y} = -\frac{b}{m} y - \frac{k}{m} x
 ```
 For the way my code is configured, we need to express the derivatives of the system in a specfic way.
