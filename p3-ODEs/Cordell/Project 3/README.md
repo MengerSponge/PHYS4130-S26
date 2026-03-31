@@ -35,7 +35,7 @@ $$
 Scipy's ODEINT incorporates a bunch of stuff it seems...
 
 # Procedure
-
+We used these methods to solve ODEs for harmonic oscillation with and without a linear dampening term. We then plotted the phase-space diagrams for each method and compared their relative errors computed using the analytic solutions to the equations. As far as relative error goes, we plotted the relative error over time for each method as well as compared the relative errors between the methods at a chosen time point. Additionally, we created Energy vs. Time plots for each method, to show whether or not energy is conserved. 
 ## Function Code
 
 ### Euler_Solver
@@ -55,7 +55,17 @@ def SHO_solver_Euler(x0, v0, tmin, tmax, nts, SHO_deriv):
     
     return t_array, x_array, v_array
 ```
-Comments
+The recursive algorithm we use for Euler's method shown above is: 
+$$
+x_0 = x_0 \\
+v_0 = v_0
+$$
+
+$$
+x_{n+1} = x_n + \Delta t\,x_n   \\
+v_{n+1} = v_n + \Delta t\,v_n
+$$
+
 ### RK2_Solver
 ```python
 def SHO_solver_RK2(x0, v0, tmin, tmax, nts, SHO_deriv):
@@ -73,7 +83,24 @@ def SHO_solver_RK2(x0, v0, tmin, tmax, nts, SHO_deriv):
         v_array[it+1] = v_array[it] + (dt * SHO_deriv([x_h, v_h], t + dt/2)[1])         # sub-step 2 for RK2
     return t_array, x_array, v_array
 ```
-Comments
+The recursively defined algorithm for RK2_solver is:
+   $$
+   x_{n+\frac{1}{2}} = x_n + \frac{\Delta t}{2}\,v_n
+   $$
+
+   $$
+   v_{n+\frac{1}{2}} = v_n + \frac{\Delta t}{2}\,A(x_n,v_n)
+   $$
+
+   
+   $$
+   x_{n+1} = x_n + \Delta t\,v_{n+\frac{1}{2}}
+   $$
+
+   $$
+   v_{n+1} = v_n + \Delta t\,A\!\left(x_{n+\frac{1}{2}}, v_{n+\frac{1}{2}}\right)
+   $$
+   where A is the acceleration.
 ### Verlet_Solver
 
 ```python
@@ -94,40 +121,31 @@ def verlet_solver(x0, v0, tmin, tmax, nts, deriv):
 
     return t_array, x_array, v_array
 ```
-The verlet solver does this basically
-$$
-x_1 = x_0 + v_0\,\Delta t + \frac{1}{2}A(x_0)\,\Delta t^2,
-$$
-
-$$
-x_{n+1} = 2x_n - x_{n-1} + A(x_n)\,\Delta t^2.
-$$
+The verlet algorithm above is recursively defined as:
 
 
+   $$
+   x_0 = x_0 \\
+    v_0 = v_0
+   $$
 
-## subsection
-What ODE's did we test these on? Exponential decay... SHO with and without a linear dampening...
+   $$
+   x_{n+1} = x_n + v_n\,\Delta t + \frac{1}{2}A(x_n,v_n)\,\Delta t^2
+   $$
 
-What did we look at to analyze the methods?
+   $$
+   v_{n+1} = v_n + \frac{1}{2}\left[A(x_n,v_n) + A(x_{n+1},v_n)\right]\Delta t
+   $$
+where A is acceleration.
 
-Phase space...
-
-Energy (Hamiltonian)... (is energy conserved basically). State the relationship between energy conservation and phase space area.
-
-Relative error vs time... (maybe also pick some reasonable tmax and compare the error at tmax)
-
-We used these methods to solve ODEs for exponential decay and harmonic oscillation with and without a linear dampening term. We then plotted the phase-space diagrams for each method and compared their relative errors computed using the analytic solutions to the equations. As far as relative error goes, we plotted the relative error over time for each method as well as compared the relative errors between the methods at a chosen time point. Additionally, we created Energy vs. Time plots for each method, to show whether or not energy is conserved. 
-
-
-## Plots
 
 ## Instructions
-To run the tool? use (need to change the instructions to compile now that I'm using a header file.)
+To run the tool run this command from the terminal that includes P3_code.py and Functions.py.
 
-`
+```bash
 conda activate [environment]
 python P3_Code.py
-`cmd
+```
 
 
 
@@ -143,6 +161,8 @@ Import Figures and talk about precision, accuracy, (error and efficiency). Why d
 
 Verlet method: The special thing about the verlet method is that it conserves energy over time as shown in fig.
 [insert figure of energy vs time for verlet method]
+
+## Plots
 
 # Conclusions
 This is where I want to talk about in what cases might one want to use which method like in terms of computational cost and overall efficiency.

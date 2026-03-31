@@ -41,8 +41,8 @@ def diffeq_solver_from_scipy(N0, tmin, tmax, nts, decay_deriv):
     N = odeint(decay_deriv, N0, t)
     return t, N
 
-def SHO_deriv(x_array, t):
-    x, v = x_array
+def SHO_deriv(xv_array, t):    # x_array is 2D with x, v 
+    x, v = xv_array
     dxdt = v
     dvdt = -k/m * x
     return [dxdt, dvdt]

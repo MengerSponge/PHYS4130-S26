@@ -38,13 +38,15 @@ method_choice = int(input("Enter your choice (1, 2, 3, 4, or 5): "))
 if system_choice == 1:
     x0 = float(input("Enter initial position: "))
     v0 = float(input("Enter initial velocity: "))
-    tmin = float(input("Enter initial time: "))
+    tmin = 0
     tmax = float(input("Enter final time: "))
     nts = int(input("Enter number of time steps: "))
     if method_choice == 1:
         t, x, v = SHO_solver_Euler(x0, v0, tmin, tmax, nts, SHO_deriv)
     elif method_choice == 2:
         t, x, v = SHO_solver_RK2(x0, v0, tmin, tmax, nts, SHO_deriv)
+    elif method_choice == 3:
+        t, x, v = solve_ivp(fun, (tmin, tmax), [x0, v0], t_eval=np.linspace(tmin, tmax, nts, endpoint=False), method='RK45').t, solve_ivp(fun, (tmin, tmax), [x0, v0], t_eval=np.linspace(tmin, tmax, nts, endpoint=False), method='RK45').y[0], solve_ivp(fun, (tmin, tmax), [x0, v0], t_eval=np.linspace(tmin, tmax, nts, endpoint=False), method='RK45').y[1]
     elif method_choice == 4:
         t, x, v = verlet_solver(x0, v0, tmin, tmax, nts, A_verlet_SHO)
     elif method_choice == 5:
@@ -56,13 +58,15 @@ if system_choice == 1:
 if system_choice == 2:
     x0 = float(input("Enter initial position: "))
     v0 = float(input("Enter initial velocity: "))
-    tmin = float(input("Enter initial time: "))
+    tmin = 0
     tmax = float(input("Enter final time: "))
     nts = int(input("Enter number of time steps: "))
     if method_choice == 1:
         t, x, v = SHO_solver_Euler(x0, v0, tmin, tmax, nts, SHO_deriv_damped)
     elif method_choice == 2:
         t, x, v = SHO_solver_RK2(x0, v0, tmin, tmax, nts, SHO_deriv_damped)
+    elif method_choice == 3:
+        t, x, v = solve_ivp(fun, (tmin, tmax), [x0, v0], t_eval=np.linspace(tmin, tmax, nts, endpoint=False), method='RK45').t, solve_ivp(fun, (tmin, tmax), [x0, v0], t_eval=np.linspace(tmin, tmax, nts, endpoint=False), method='RK45').y[0], solve_ivp(fun, (tmin, tmax), [x0, v0], t_eval=np.linspace(tmin, tmax, nts, endpoint=False), method='RK45').y[1]
     elif method_choice == 4:
         t, x, v = verlet_solver(x0, v0, tmin, tmax, nts, A_verlet_damped)
     elif method_choice == 5:
@@ -101,4 +105,4 @@ elif plot_choice == 2:
 ## relative error
 
 
-# Target error? nts incrementation ?(not sure if powers of 2 are the best))
+# Target error? nts incrementation ?(not sure if powers of 2 are the best))o
