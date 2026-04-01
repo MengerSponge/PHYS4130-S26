@@ -218,7 +218,7 @@ Here, k is the spring constant, m is the mass, and c is the damping strength. Fo
 ```math
 \dot{x} = y
 \qquad
-\dot{y} = -\frac{b}{m} y - \frac{k}{m} x
+\dot{y} = -\frac{c}{m} y - \frac{k}{m} x
 ```
 Then, we will want to write this as a vector equation so that we know what the form of the derivative will be. 
 
@@ -226,7 +226,7 @@ Then, we will want to write this as a vector equation so that we know what the f
 \frac{d}{dt}
 \begin{pmatrix} x \\ y \end{pmatrix}
 =
-\begin{pmatrix} y \\ -\frac{b}{m} y - \frac{k}{m} x \end{pmatrix}.
+\begin{pmatrix} y \\ -\frac{c}{m} y - \frac{k}{m} x \end{pmatrix}
 ```
 
 For the way the code is written, we need to express the derivatives of the system in a specfic way.
