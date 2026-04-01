@@ -8,7 +8,7 @@ from scipy.integrate import odeint
 k = 1.0
 m = 1.0
 b = 0.2
-tau = 1.0
+tau =1.0
 
 
 # functions
@@ -130,7 +130,6 @@ def verlet_solver(x0, v0, tmin, tmax, nts, deriv):
 
 
     return t_array, x_array, v_array
-
 
 def analytical_SHO(x0, v0,t):
     omega = np.sqrt(k/m)

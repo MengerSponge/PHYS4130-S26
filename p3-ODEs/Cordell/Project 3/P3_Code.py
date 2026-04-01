@@ -20,7 +20,7 @@ from scipy.integrate import solve_ivp
 from scipy.integrate import odeint
 
 print("Select system:")
-print("1. Simple Harmonic Oscillator (SHO)")
+print("1. Simple Harmonic Oscillator")
 print("2. Damped Harmonic Oscillator")
 system_choice = int(input("Enter your choice (1 or 2): "))
 
@@ -40,7 +40,7 @@ if system_choice == 1:
     v0 = float(input("Enter initial velocity: "))
     tmin = 0
     tmax = float(input("Enter final time: "))
-    nts = int(input("Enter number of time steps (Cannot control nts for RK4 because Scipy chooses it): "))
+    nts = int(input("Enter number of time steps: "))
     if method_choice == 1:
         t, x, v = SHO_solver_Euler(x0, v0, tmin, tmax, nts, SHO_deriv)
     elif method_choice == 2:
@@ -116,8 +116,8 @@ elif plot_choice == 3:
     if system_choice == 1:
         t_verlet, x_verlet, v_verlet = verlet_solver(x0, v0, tmin, tmax, nts, A_verlet_SHO)
 
-        t_eval = np.linspace(tmin, tmax, nts, endpoint=False)
-        sol = solve_ivp(fun, (tmin, tmax), [x0, v0], t_eval=t_eval, method='RK45')
+        t_eval = np.linspace(tmin, tmax, nts, endpoint=False)       # tries to force it to evaluate at nts but is nowhere near 100% effective
+        sol = solve_ivp(fun_SHO, (tmin, tmax), [x0, v0], t_eval=t_eval, method='RK45')
         t_rk4 = sol.t
         x_rk4 = sol.y[0]
         v_rk4 = sol.y[1]
@@ -125,21 +125,30 @@ elif plot_choice == 3:
         t_rk2, x_rk2, v_rk2 = SHO_solver_RK2(x0, v0, tmin, tmax, nts, SHO_deriv)
         t_odeint, x_odeint, v_odeint = SHO_solver_ODEINT(x0, v0, tmin, tmax, nts, SHO_deriv)
         t_euler, x_euler, v_euler = SHO_solver_Euler(x0, v0, tmin, tmax, nts, SHO_deriv)
-        
-        relative_error_verlet_at_tmax = relative_error(x_verlet[-1], analytical_SHO(x0, v0, t_verlet[-1]))
-        relative_error_rk4_at_tmax = relative_error(x_rk4[-1], analytical_SHO(x0, v0, t_rk4[-1]))
-        relative_error_rk2_at_tmax = relative_error(x_rk2[-1], analytical_SHO(x0, v0, t_rk2[-1]))
-        relative_error_odeint_at_tmax = relative_error(x_odeint[-1], analytical_SHO(x0, v0, t_odeint[-1]))
-        relative_error_euler_at_tmax = relative_error(x_euler[-1], analytical_SHO(x0, v0, t_euler[-1]))
-        print(f"Relative error at t={tmax} for Verlet: {relative_error_verlet_at_tmax:.6e}")
-        print(f"Relative error at t={tmax} for RK4: {relative_error_rk4_at_tmax:.6e}")
-        print(f"Relative error at t={tmax} for RK2: {relative_error_rk2_at_tmax:.6e}")
-        print(f"Relative error at t={tmax} for ODEINT: {relative_error_odeint_at_tmax:.6e}")
-        print(f"Relative error at t={tmax} for Euler: {relative_error_euler_at_tmax:.6e}")
+
+        # This SHOULD find the time index closest to the user requested time to evaluate
+        i_verlet = np.argmin(np.abs(t_verlet - tmax_error))
+        i_rk4 = np.argmin(np.abs(t_rk4 - tmax_error))
+        i_rk2 = np.argmin(np.abs(t_rk2 - tmax_error))
+        i_odeint = np.argmin(np.abs(t_odeint - tmax_error))
+        i_euler = np.argmin(np.abs(t_euler - tmax_error))
+
+        relative_error_verlet = relative_error(x_verlet[i_verlet], analytical_SHO(x0, v0, t_verlet[i_verlet]))
+        relative_error_rk4 = relative_error(x_rk4[i_rk4], analytical_SHO(x0, v0, t_rk4[i_rk4]))
+        relative_error_rk2 = relative_error(x_rk2[i_rk2], analytical_SHO(x0, v0, t_rk2[i_rk2]))
+        relative_error_odeint = relative_error(x_odeint[i_odeint], analytical_SHO(x0, v0, t_odeint[i_odeint]))
+        relative_error_euler = relative_error(x_euler[i_euler], analytical_SHO(x0, v0, t_euler[i_euler]))
+
+        print(f"Relative error nearest to t={tmax_error} for Verlet: {relative_error_verlet:.6e} (evaluated at t={t_verlet[i_verlet]:.6f})")
+        print(f"Relative error nearest to t={tmax_error} for RK45:   {relative_error_rk4:.6e} (evaluated at t={t_rk4[i_rk4]:.6f})")
+        print(f"Relative error nearest to t={tmax_error} for RK2:    {relative_error_rk2:.6e} (evaluated at t={t_rk2[i_rk2]:.6f})")
+        print(f"Relative error nearest to t={tmax_error} for ODEINT: {relative_error_odeint:.6e} (evaluated at t={t_odeint[i_odeint]:.6f})")
+        print(f"Relative error nearest to t={tmax_error} for Euler:  {relative_error_euler:.6e} (evaluated at t={t_euler[i_euler]:.6f})")
+    
     elif system_choice == 2:
         t_verlet, x_verlet, v_verlet = verlet_solver(x0, v0, tmin, tmax, nts, A_verlet_damped)
 
-        t_eval = np.linspace(tmin, tmax, nts, endpoint=False)
+        t_eval = np.linspace(tmin, tmax, nts, endpoint=False)           # tries to force it to evaluate at nts but is nowhere near 100% effective
         sol = solve_ivp(fun, (tmin, tmax), [x0, v0], t_eval=t_eval, method='RK45')
         t_rk4 = sol.t
         x_rk4 = sol.y[0]
@@ -148,17 +157,26 @@ elif plot_choice == 3:
         t_rk2, x_rk2, v_rk2 = SHO_solver_RK2(x0, v0, tmin, tmax, nts, SHO_deriv_damped)
         t_odeint, x_odeint, v_odeint = SHO_solver_ODEINT(x0, v0, tmin, tmax, nts, SHO_deriv_damped)
         t_euler, x_euler, v_euler = SHO_solver_Euler(x0, v0, tmin, tmax, nts, SHO_deriv_damped)
-        
-        relative_error_verlet_at_tmax = relative_error(x_verlet[-1], analytical_damped_SHO(x0, v0, t_verlet[-1]))
-        relative_error_rk4_at_tmax = relative_error(x_rk4[-1], analytical_damped_SHO(x0, v0, t_rk4[-1]))
-        relative_error_rk2_at_tmax = relative_error(x_rk2[-1], analytical_damped_SHO(x0, v0, t_rk2[-1]))
-        relative_error_odeint_at_tmax = relative_error(x_odeint[-1], analytical_damped_SHO(x0, v0, t_odeint[-1]))
-        relative_error_euler_at_tmax = relative_error(x_euler[-1], analytical_damped_SHO(x0, v0, t_euler[-1]))
-        print(f"Relative error at t={tmax} for Verlet: {relative_error_verlet_at_tmax:.6e}")
-        print(f"Relative error at t={tmax} for RK4: {relative_error_rk4_at_tmax:.6e}")
-        print(f"Relative error at t={tmax} for RK2: {relative_error_rk2_at_tmax:.6e}")
-        print(f"Relative error at t={tmax} for ODEINT: {relative_error_odeint_at_tmax:.6e}")
-        print(f"Relative error at t={tmax} for Euler: {relative_error_euler_at_tmax:.6e}")
+
+        # This SHOULD find the time index closest to the user requested time to evaluate
+        i_verlet = np.argmin(np.abs(t_verlet - tmax_error))
+        i_rk4 = np.argmin(np.abs(t_rk4 - tmax_error))
+        i_rk2 = np.argmin(np.abs(t_rk2 - tmax_error))
+        i_odeint = np.argmin(np.abs(t_odeint - tmax_error))
+        i_euler = np.argmin(np.abs(t_euler - tmax_error))
+
+        relative_error_verlet = relative_error(x_verlet[i_verlet], analytical_damped_SHO(x0, v0, t_verlet[i_verlet]))
+        relative_error_rk4 = relative_error(x_rk4[i_rk4], analytical_damped_SHO(x0, v0, t_rk4[i_rk4]))
+        relative_error_rk2 = relative_error(x_rk2[i_rk2], analytical_damped_SHO(x0, v0, t_rk2[i_rk2]))
+        relative_error_odeint = relative_error(x_odeint[i_odeint], analytical_damped_SHO(x0, v0, t_odeint[i_odeint]))
+        relative_error_euler = relative_error(x_euler[i_euler], analytical_damped_SHO(x0, v0, t_euler[i_euler]))
+
+        print(f"Relative error nearest to t={tmax_error} for Verlet: {relative_error_verlet:.6e} (evaluated at t={t_verlet[i_verlet]:.6f})")
+        print(f"Relative error nearest to t={tmax_error} for RK45:   {relative_error_rk4:.6e} (evaluated at t={t_rk4[i_rk4]:.6f})")
+        print(f"Relative error nearest to t={tmax_error} for RK2:    {relative_error_rk2:.6e} (evaluated at t={t_rk2[i_rk2]:.6f})")
+        print(f"Relative error nearest to t={tmax_error} for ODEINT: {relative_error_odeint:.6e} (evaluated at t={t_odeint[i_odeint]:.6f})")
+        print(f"Relative error nearest to t={tmax_error} for Euler:  {relative_error_euler:.6e} (evaluated at t={t_euler[i_euler]:.6f})")
+    
 
 
 
