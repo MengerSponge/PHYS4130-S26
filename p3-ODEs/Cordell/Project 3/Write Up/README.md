@@ -60,15 +60,20 @@ def SHO_solver_Euler(x0, v0, tmin, tmax, nts, SHO_deriv):
     return t_array, x_array, v_array
 ```
 The recursive algorithm we use for Euler's method shown above is: 
+
 $$
 x_0 = x_0
 $$
+
 $$
 v_0 = v_0
 $$
 
 $$
-x_{n+1} = x_n + \Delta t\,x_n   \\
+x_{n+1} = x_n + \Delta t\,x_n
+$$
+
+$$
 v_{n+1} = v_n + \Delta t\,v_n
 $$
 
@@ -90,6 +95,7 @@ def SHO_solver_RK2(x0, v0, tmin, tmax, nts, SHO_deriv):
     return t_array, x_array, v_array
 ```
 The recursively defined algorithm for RK2_solver is:
+
    $$
    x_{n+\frac{1}{2}} = x_n + \frac{\Delta t}{2}\,v_n
    $$
@@ -106,6 +112,7 @@ The recursively defined algorithm for RK2_solver is:
    $$
    v_{n+1} = v_n + \Delta t\,A\!\left(x_{n+\frac{1}{2}}, v_{n+\frac{1}{2}}\right)
    $$
+
    where A is the acceleration.
 ### Verlet_Solver
 
@@ -133,6 +140,7 @@ The verlet algorithm above is recursively defined as:
    $$
    x_0 = x_0
    $$
+
    $$
    v_0 = v_0
    $$
@@ -144,6 +152,7 @@ The verlet algorithm above is recursively defined as:
    $$
    v_{n+1} = v_n + \frac{1}{2}\left[A(x_n,v_n) + A(x_{n+1},v_n)\right]\Delta t
    $$
+   
 where A is acceleration.
 
 
