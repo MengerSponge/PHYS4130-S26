@@ -261,6 +261,13 @@ Where x is the position vector from the mass point to the field point, and G is 
 ```math
 \mathbf{a}_j = - \sum_{\substack{i=1 \\ i \neq j}}^{n} G m_i \frac{\mathbf{x}_j - \mathbf{x}_i}{\lvert \mathbf{x}_j - \mathbf{x}_i \rvert^3}
 ```
+Now, the positon vectors are taken to be relative to the origin of the system. We want to express this a coupled first order system, so let y denote velocities.
+```math
+\dot{\mathbf{x}}_j = \mathbf{y}_j,
+\qquad
+\dot{\mathbf{y}}_j = - \sum_{\substack{i=1 \\ i \neq j}}^{n} G m_i \frac{\mathbf{x}_j - \mathbf{x}_i}{\lvert \mathbf{x}_j - \mathbf{x}_i \rvert^3}
+```
+
 
 The energy-conserving properties of symplectic integrators make them useful for the n-body problem. For this section, we will employ the 4th Order Yoshida method. Let's see how it handles a 5-body system with the following conditions.
 
