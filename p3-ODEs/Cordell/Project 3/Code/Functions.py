@@ -8,7 +8,7 @@ from scipy.integrate import odeint
 k = 1.0
 m = 1.0
 b = 0.2
-tau = 1.0
+tau =1.0
 
 
 # functions
@@ -41,8 +41,8 @@ def diffeq_solver_from_scipy(N0, tmin, tmax, nts, decay_deriv):
     N = odeint(decay_deriv, N0, t)
     return t, N
 
-def SHO_deriv(x_array, t):
-    x, v = x_array
+def SHO_deriv(xv_array, t):    # x_array is 2D with x, v 
+    x, v = xv_array
     dxdt = v
     dvdt = -k/m * x
     return [dxdt, dvdt]
@@ -102,6 +102,12 @@ def fun(t, y):
     dvdt = -k/m * x - b/m * v
     return [dxdt, dvdt]
 
+def fun_SHO(t, y):
+    x, v = y
+    dxdt = v
+    dvdt = -k/m * x
+    return [dxdt, dvdt]
+
 def A_verlet_SHO(x_array, v_array):
         return -k/m * x_array                       # acceleration (x'') for SHO
 
@@ -124,3 +130,26 @@ def verlet_solver(x0, v0, tmin, tmax, nts, deriv):
 
 
     return t_array, x_array, v_array
+
+def analytical_SHO(x0, v0,t):
+    omega = np.sqrt(k/m)
+    A = np.sqrt(x0**2 + (v0/omega)**2)
+    phi = np.arctan(v0/(omega*x0))
+    return A * np.cos(omega*t - phi)
+
+def analytical_damped_SHO(x0, v0,t):
+    omega0 = np.sqrt(k/m)
+    gamma = b/(2*m)
+    omega_d = np.sqrt(omega0**2 - gamma**2)
+    A = np.sqrt(x0**2 + ((v0 + gamma*x0)/omega_d)**2)
+    phi = np.arctan((v0 + gamma*x0)/(omega_d*x0))
+    return A * np.exp(-gamma*t) * np.cos(omega_d*t - phi)
+
+def relative_error(numerical, analytical):
+    return np.abs(numerical - analytical) / np.abs(analytical)
+
+def A_verlet_SHO(x_array, v_array):
+        return -k/m * x_array                       # acceleration (x'') for SHO
+
+def A_verlet_damped(x_array, v_array):
+        return -k/m * x_array - b/m * v_array       # acceleration (x'') for damped SHO
