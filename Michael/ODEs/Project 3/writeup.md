@@ -254,7 +254,7 @@ Let's first look at how the this system evolves over time with no damping for so
 We can see that this traces out an ellipse in phase space, which is what we expect for the analytic solution for system. However, these methods are not outputting the exact same trajectory in phase space. You can resolve the difference by zooming in the plot range, but this is a good oppurtunitty to see how the total mechanical enerergy of this system evolves with the different methods. Physically, we know that it should be conserved because spring forces are conservative, but not all numeriacl methods conserve energy.
 
 <div align="center">
-  <img src="SHO_Energy.png" alt="Undamped Energies" width="900">
+  <img src="SHO_Energy.png" alt="Undamped Energies" width="800">
   <p><em>Figure 2:</em> Plots of the energies for the undamped SHO for three different integrators.</p>
 </div>
 
@@ -268,7 +268,7 @@ This shows a large distinction among these three methods. We see that the symple
 As expected, the system is now losing energy to viscous forces. This causes it to spiral down to the origin, which for this system is the state with no energy. We see the same behavior in the energy.
 
 <div align="center">
-  <img src="SHO_Damped_Energy.png" alt="Damped Energies" width="600">
+  <img src="SHO_Damped_Energy.png" alt="Damped Energies" width="800">
   <p><em>Figure 4:</em> Plots of the energy over time for the damped SHO for three different integrators.</p>
 </div>
 
