@@ -271,7 +271,12 @@ We have enough particles in this simulation to test the virial theorem. For a gr
 \langle T \rangle = -\frac{1}{2} \langle U \rangle
 ```
 
-Let's first see how the kinetic and potential energy evolves over time 
+Let's first see how the kinetic and potential energy evolves over time.
+
+<div align="center">
+  <img src="5_Body_Energies.png" alt="5-Body Energies" width="600">
+  <p><em>Figure 7:</em> total potential and kinetic energy of for 5 gravitationally attracting masses.</p>
+</div>
 
 ## Conclusion
 (Idea to inclulde in this section: Which integrator is the best? There is not one that is objectively better than the others. The one that you choose depends on the the problem you are trying to solve and the context of your field.)
