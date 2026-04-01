@@ -228,7 +228,6 @@ Then, we will want to write this as a vector equation so that we know what the f
 =
 \begin{pmatrix} y \\ -\frac{c}{m} y - \frac{k}{m} x \end{pmatrix}
 ```
-
 For the way the code is written, we need to express the derivatives of the system in a specfic way.
 ```python
 
@@ -306,11 +305,11 @@ Now, we can repackage this to resemble oher systems. Let X be the vector whose c
 \mathbf{A}
 \end{pmatrix}.
 ```
-This may not seem useful, but it means that we just need to calculate A as a list of 2D vectors at each timestep to simulate this problem. We can do that with the symplectic integrators because of how general they are due to numpy arrays being vectorized. To compute the derivatives, we use the following functions. This works well anyways since symplectic methods are especially useful for n-body simulation.
+This may not seem useful, but it means that we just need to calculate A as a list of 2D vectors at each timestep to simulate this problem. We can do that with the symplectic integrators because of how general they are. This works well too since symplectic methods are especially useful for n-body simulation. Since it had not been used yet, this will be done with the Yoshida method. To compute the derivatives, we use the following functions. 
 
 ```python
 def GravAcc(P1, P2, M2): #acceleration on P1 from P2
-    if np.array_equal(P1, P2): #Impportant edge case
+    if np.array_equal(P1, P2): #no self interaction
         return np.array([0,0])
     else:
         return G*M2*(P2 - P1)/((np.linalg.norm(P2 - P1)**3)) #Gravitational acceleration formula
@@ -337,20 +336,60 @@ M =  [1.0, .50, 0.50, .450, 0.450]            # Masses
 X0 = [[0,0], [2,0], [-2,0], [0,2], [0,-2]]    # Initial Positions
 V0 = [[0,0], [0,1], [0,-1], [-1,0], [1,0]]    # Initial Velocities
 ```
-Then, the simulation results are plotted.
+Here are the results for these condtions.
 
 <div align="center">
   <img src="5_Body_Trajectories.png" alt="5-Body simulation" width="600">
   <p><em>Figure 5:</em> Trajectories of 5 gravitationally attracting masses.</p>
 </div>
 
-We have enough particles in this simulation to test the virial theorem. For a gravtiationally bound system, it related the average kinetic and potential energy.
+We have enough particles in this simulation to test the virial theorem. For a gravtiationally bound system, it relates the average kinetic and potential energy.
 
 ```math
 \langle T \rangle = -\frac{1}{2} \langle U \rangle
 ```
+First, here's how you can calculate the energies.
+```python
+def Kinetic_Over_Time(sol): #takes the solution made by Yoshida method and finds the kinetic energy over time
 
-Let's first see how the kinetic and potential energy evolves over time.
+    velocities = [V[1] for V in sol[1:]]
+    T = [] #kinetic energy
+
+    for i in range(len(sol[0])): #loop over the velocities at the current time
+        v = [U[i] for U in velocities] #selects the ith term in velocities
+        q = [0.5*M[j]*(np.linalg.norm(v[j])**2) for j in range(len(v))]
+
+        T.append(sum(q))
+
+    return T
+
+def Potential(positions, masses, G): #takes in the positions at a time and outputs the potential
+
+    positions = np.asarray(positions)
+    masses = np.asarray(masses)
+
+    N = len(masses)
+    U = 0.0
+
+    #carefully done to avoid double summing
+    for i in range(N):
+        for j in range(i + 1, N):
+            r = np.linalg.norm(positions[i] - positions[j])
+            if r != 0:
+                U -= G * masses[i] * masses[j] / r
+    return U
+
+def Potential_Over_Time(sol): #Uses the potential function to find the potential at all points in time
+    All_positions = [X[0] for X in sol[1:]]
+
+    Potential_Energies = []
+    for i in range(len(sol[0])): #do over time
+        positions = [X[i] for X in All_positions] #goes over all the trajectoreis
+        Potential_Energies.append(Potential(positions, M, G))
+
+    return Potential_Energies
+```
+Now, let's first see how the kinetic and potential energy evolves over time for this system.
 
 <div align="center">
   <img src="5_Body_Energies.png" alt="5-Body Energies" width="600">
@@ -373,7 +412,7 @@ Which is pretty close to the -1/2 we would expect, so we can be reasonably sure 
 
 ## Phase Space Volume and Symplectic Methods
 
-Symplectic methods are characterized as conserving volume in phase space. This is something we can analyze with our undamped simple harmonic oscillator. Since this system follows the trajectory of one particle, we have a two dimensional phase space: Velocity vs Position. So, our volume becomes an area. Then, the algorithm is relativly simple. We want to see how the are of a small patch of initial conditions in phase space evolves over time. To achieve this, we generate a list of random initial conditions that are close. This will approximate our patch of area. Then, we will use the concave_hull and shapely.geometry packages to generate a concave hull around our points as they evolve in time and calculate the area using the polygon object. Here is some sample code for how this can be done the Velocity Verlet method.
+Symplectic methods are characterized as conserving volume in phase space. This is something we can observe with our undamped SHO. Since this system describes the trajectory of one particle, we have a two dimensional phase space: Velocity vs Position. So, our volume becomes an area. Then, the algorithm is relativly simple. We want to see how the are of a small patch of initial conditions in phase space evolves over time. To achieve this, we generate a list of random initial conditions that are close. This will approximate our patch of area. Then, we will use the concave_hull and shapely.geometry packages to generate a concave hull around our points as they evolve in time and calculate the area using the polygon object. Here is some sample code for how this can be done the Velocity Verlet method.
 
 ```python
 from concave_hull import concave_hull
@@ -407,7 +446,7 @@ We will compare the Velocity Verlet and Yoshida methods to LSODA. RK4(5) was omi
   <p><em>Figure 7:</em> Plots of the phasae space volums over time for the undamped SHO for three different integrators.</p>
 </div>
 
-The two symplectic methods seem to be conserving phase space volume while LSODA is accumulating more error as the simulation continues! Now, let's see what happens when damping is introduced.
+The two symplectic methods seem to be conserving phase space volume while LSODA is accumulating more error as the simulation continues. Now, let's see what happens when damping is introduced.
 
 <div align="center">
   <img src="SHO_Damped_Volume.png" alt="Damped Phase Volumes" width="600">
@@ -417,13 +456,21 @@ The two symplectic methods seem to be conserving phase space volume while LSODA 
 Now, all methods have the volume decaying to zero. This is not surprising of course. This system no longer conserves energy, and all initial conditions should tend towards the zero energy state at the origin. So, since all points get closer over time, the phase space area will decrease.
 
 ## Conclusion
-(Idea to inclulde in this section: Which integrator is the best? There is not one that is objectively better than the others. The one that you choose depends on the the problem you are trying to solve and the context of your field.)
+The method you want to use for your problem depends on the context of your work. If you are trying to create a high fidelity simulation for resarch, and you have the time and computational resources to do so, then you probably want to opt for a higher order method and/or smaller time steps (up to a point). Also, knowing your system helps in choosing your integrator. If it conserves energy, then you can choose a sumplectic integrator and may get away with a larger step size. Furthermore, lower order methods generally perform quite well if you don't need high precision or your limited in resources. 
 
 ## Attribution
-The book 
+Wikipedia was used for the coefficients of the Yoshida method. "Computational Physics" by Prof. Mark Newmann from MSU was used as well as "Computational Physics in Python" from the assignment description.
 
 ## Timekeeping
 I spent about 20 hours on the code and about 10 hours on the write up.
 
+## A Note on Error 
+I tried for an extremely long time to get a nice plot of relative error for these methods. Howevr, RK4(5) and LSODA kept producing flat errors. I susptect this is because they are adaptive, and they take the error as low as their initial tolerance no matter what. It wouldn't make sense to change that in my opinion since the error is then whatver I choose it to be, not something that responds to step size. Here is the plot I was able to produce.
+
+<div align="center">
+  <img src="errors_attempt.png" alt="Relative Errors vs Stepsize" width="600">
+  <p><em>Figure 9:</em> Plots of the relative errors as the step szie decreases for the SHO.</p>
+</div>
+
 ## Languages, Libraries, Lessons Learned
-Everything was written in python. I made an effort to write all of my code to be highly reusable. This meant that the same function I use to simulate the SHO could be used to simulate the n-body problem. 
+Everything was written in python. The libraries used were numpy, scipy, matplotlib, concave_hull, and shapely. I learned to get really good at indexing and dealing with high-dimensional monsters.
