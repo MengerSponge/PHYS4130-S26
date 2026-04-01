@@ -1,8 +1,11 @@
 # Introduction
-Numerical methods can be implemented to approximate solutions for ordinary differential equations (ODEs) that would otherwise be a computationally labor-some task. This package was developed to demonstrate the capabilities of several approximation techniques which include Euler's method, the Runge-Kutta technique, Verlet integration, and Scipy's ODEINT. We provide phase-space and Energy vs Time plots to illustrate their approximation capabilities and ability to conserve energy. By the same token, we plot and analyze the relative error of each method. We found that the Verlet method reaches a 5% relative error within 64 time steps, whereas RK2, RK4, and ODEINT reach the target error within 128 time steps, and Euler's method requires about 2048 time steps. The pros and cons of each method depending on the situation are further discussed in the report.
+Numerical methods can be implemented to approximate solutions for ordinary differential equations (ODEs) that would otherwise be a computationally labor-some task. This package was developed to demonstrate the capabilities of several approximation techniques which include Euler's method, the Runge-Kutta technique, Verlet integration, and Scipy's ODEINT. We provide phase-space and Energy vs Time plots to illustrate their approximation capabilities and ability to conserve energy. By the same token, analyze the absolute error of each method.        
+
+
+ We found that the Verlet method reaches a 5% relative error within 64 time steps, whereas RK2, RK4, and ODEINT reach the target error within 128 time steps, and Euler's method requires about 2048 time steps. The pros and cons of each method depending on the situation are further discussed in the report.
 ## Background Theory
 
-Euler's method is typically what one would start out with when exploring ODE approximation methods. It approximates the solution of an ODE at a point, B, by starting from an initial value, point A, and taking the next point B on the tangent line to the solution at point A. Then, it repeats the process for the subsequent points as depicted in Fig. 1. The error of this technique reduces with a larger number of points.
+Euler's method is typically what one would start out with when exploring ODE approximation methods. It approximates the solution of an ODE at a point, B, by starting from an initial value, point A, and taking the next point B on the tangent line to the solution at point A. Then, it repeats the process for the subsequent points as depicted in Fig. 1. The number of these sub-intervals taken over time is typically referred to as the number of time steps (nts). And, the error of Euler's method reduces proportionally as the number of time steps increases, so we call it a first order method or a first order approximation. 
 
 <p align="center">
   <img src="./Euler_method.png" alt="Extension plot" width="300">
@@ -14,7 +17,7 @@ Euler's method is typically what one would start out with when exploring ODE app
 
 
 
-The Runge-Kutta method is similar to Euler's method in the sense that it is an iterative technique; however, it incorporates averaging which makes it far more precise than Euler's method. For example, RK4 approximates the slope using a weighted average of the tangent line at point A, point B and their midpoint. 
+The Runge-Kutta method is similar to Euler's method in the sense that it is an iterative technique; however, it incorporates additional points within the interval which generally makes it much more accurate then Euler's method. For example, RK2 uses the slope at A to approximate the solution at the midpoint of A and B, then uses the slope at the midpoint to approximate the solution at B. Furthermore, RK4 utilizes a weighted average of the slope at A, the slope at B, and the slope at the midpoint using two different estimates. As a result, it turns out that RK2 is a second order method whereas RK4 is a fourth order method.
 
 Verlet integration can be implemented for second order ODE's of the form $\ddot{x}(t) = A(x(t))$ such as for a harmonic oscillator. The algorithm is derived from the Taylor expansion for $x(t+\Delta t)$ and $x(t-\Delta t)$ as follows,
 
@@ -26,7 +29,7 @@ $$
 x(t-\Delta t)=x(t)-\dot{x}(t)\Delta t+\frac{1}{2}\ddot{x}(t)\Delta t^2-\frac{1}{6}x^{(3)}(t)\Delta t^3+\cdots
 $$
 
-Adding them yields
+where adding these yields
 
 $$
 x(t+\Delta t)=2x(t)-x(t-\Delta t)+\ddot{x}(t)\Delta t^2+\mathcal{O}(\Delta t^4)
@@ -35,7 +38,9 @@ $$
 Scipy's ODEINT incorporates a bunch of stuff it seems...
 
 # Procedure
-We used these methods to solve ODEs for harmonic oscillation with and without a linear dampening term. We then plotted the phase-space diagrams for each method and compared their relative errors computed using the analytic solutions to the equations. As far as relative error goes, we plotted the relative error over time for each method as well as compared the relative errors between the methods at a chosen time point. Additionally, we created Energy vs. Time plots for each method, to show whether or not energy is conserved. 
+To demonstrate the use of each method, we approximate x(t) and v(t) for a harmonic oscillator with and without a linear dampening term. We illustrate these solutions by plotting the phase-space diagrams for each method. In addition, we provide Energy vs. Time plots to show whether or not a specific method conserves energy. To compare between the different methods, our tool offers several means of error analysis where the error is computed from the analytic solution. The first is a straightforward output of the error at some user-selected time. This option is most reliable (as it works for RK4 and ODEINT), yet it offers the least insight. The next option is to output the number of time steps required to achieve a user-defined target error. However, this option is not compatible with RK4 and ODEINT as Scipy adaptively chooses the number of timesteps. Lastly, our tool offers Number of Time Steps vs Error loglog plots which also is not compatible with RK4 and ODEINT since Scipy adaptively chooses the number of timesteps. Initially, we attempted to work around Scipy's adaptive selection of nts by passing specific time points in an array, t_eval, "linspaced" into time points based on the number of time steps. However, Scipy just returns the solutions at those time points based on its own number of time steps. 
+
+ 
 ## Function Code
 
 ### Euler_Solver
@@ -140,7 +145,7 @@ where A is acceleration.
 
 
 ## Instructions
-To run the tool run this command from the terminal that includes P3_code.py and Functions.py.
+To run the tool use this command from the terminal that includes P3_code.py and Functions.py.
 
 ```bash
 conda activate [environment]
@@ -151,18 +156,19 @@ python P3_Code.py
 
 # Analysis
 
-Import Figures and talk about precision, accuracy, (error and efficiency). Why does Euler's method drift? Error accumulates.
- [plot of Euler's method vs analytic] caption: the error accumulates with more time steps 
 
-... RK method is a step above... higher order RK method is better but more computer work required... 
-[RK2 vs RK4 plot] caption: notice that RK2 and RK4 are not very different for nts range.  
 
-... Scipy's odeINT. Talk about ease of use. seems to yield the least relative error.
+## Phase Space 
 
-Verlet method: The special thing about the verlet method is that it conserves energy over time as shown in fig.
-[insert figure of energy vs time for verlet method]
 
-## Plots
+
+## Energy vs. Time 
+
+
+
+## Error 
+
+
 
 # Conclusions
 This is where I want to talk about in what cases might one want to use which method like in terms of computational cost and overall efficiency.
