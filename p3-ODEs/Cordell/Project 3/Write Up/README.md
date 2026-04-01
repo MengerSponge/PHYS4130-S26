@@ -152,7 +152,7 @@ The verlet algorithm above is recursively defined as:
    $$
    v_{n+1} = v_n + \frac{1}{2}\left[A(x_n,v_n) + A(x_{n+1},v_n)\right]\Delta t
    $$
-   
+
 where A is acceleration.
 
 
@@ -217,7 +217,7 @@ Some applications might require the conservation of energy. For example, a simul
 ## Error 
 We demonstrate three strategies to analyze error below. The first is calculating at the error at a chosen time. Next, is computing the number of time steps required to reach a certain target error. Last, is analyzing the slope of a loglog plot of Error vs. Number of Time Steps. 
 ### Error Output at Selected Time
-The time we chose to demonstrate is 4 seconds. The reason for this is because x(t) is not at the boundaries or origin here which might cause weird spikes in the error. Anyways, Table 1 illustrates the resulting errors for each method at t=4.0 s with and without dampening. ODEINT has the lowest error for both systems by a substantial margin ($10^{-9}$ and $10^{-8}$ order). The second lowest error for both systems is RK4(5) on the order of $10^{-4}. Verlet and RK2 are around the same error on the order of $10^{-2}$ and $10^{-3}$. Euler's method is on the order of $10^{-1}.
+The time we chose to demonstrate is 4 seconds. The reason for this is because x(t) is not at the boundaries or origin here which might cause weird spikes in the error. Anyways, Table 1 illustrates the resulting errors for each method at t=4.0 s with and without dampening. ODEINT has the lowest error for both systems by a substantial margin ($10^{-9}$ and $10^{-8}$ order). The second lowest error for both systems is RK4(5) on the order of $10^{-4}$. Verlet and RK2 are around the same error on the order of $10^{-2}$ and $10^{-3}$. Euler's method is on the order of $10^{-1}$.
 
 | System | Requested Time | Evaluated Time | Verlet Relative Error | RK4(5) Relative Error | RK2 Relative Error | ODEINT Relative Error | Euler Relative Error |
 |---|---:|---:|---:|---:|---:|---:|---:|
