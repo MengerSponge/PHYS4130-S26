@@ -187,7 +187,7 @@ def Yoshida(X0, Y0, tmin, tmax, nts, du_dt):
 
         return solutions
 ```
-One last thing to note is the limits of these function. The way the RK4(5) and LSODA funtions are written, it is not possible to have a system where particles are couple together. This is because the functions merely loop over intial condtions and solve that particular problem. Since the the symplectic methods had to be written explicitly, they have much more freedom in what they can do. If you write your system correctly and express the derivative properly, these methods can treat the lists of initial conditions as interacting particles. Of course, if you instead want to solve the same problem for different sets of inital conditions, that is still possible too. You just don't couple your derivatives of one trajectory to the others. This makes them highly flexible! The symplectic methods can solve something like the SHO for multiple ICS up to the n-body problem for as many bodies as you input without changing the function at all. We will see all of these uses in the next sections.
+One last thing to note is the limits of these function. The way the RK4(5) and LSODA funtions are written, it is not possible to have a system where particles are couple together. This is because the functions merely loop over intial condtions and solve that particular problem. Since the the symplectic methods had to be written explicitly, they have much more freedom in what they can do. If you write your system correctly and express the derivative properly, these methods can treat the lists of initial conditions as interacting particles. Of course, if you instead want to solve the same problem for different sets of inital conditions, that is still possible too. You just don't couple your derivatives of one trajectory to the others. This makes them highly flexible! They take full advantage of the vectorization of numpy arrays. The symplectic methods can solve something like the SHO for multiple ICS up to the n-body problem for as many bodies as you input without changing the function at all. We will see all of these uses in the next sections.
 
 ## Simple Harmonic Oscillator
 
@@ -267,9 +267,44 @@ Now, the positon vectors are taken to be relative to the origin of the system. W
 \qquad
 \dot{\mathbf{y}}_j = - \sum_{\substack{i=1 \\ i \neq j}}^{n} G m_i \frac{\mathbf{x}_j - \mathbf{x}_i}{\lvert \mathbf{x}_j - \mathbf{x}_i \rvert^3}
 ```
+Now, we've essentially written this as a first order system. We can repackage these results to resemble oher system. Let X be the vector whose components are the positions x_j, then let Y be the vector whose components are y_j, lastly let A be the vector whose components are a_j. Then, our system can be written in the highly absctraced form
 
+```math
+\frac{d}{dt}
+\begin{pmatrix}
+\mathbf{X} \\
+\mathbf{Y}
+\end{pmatrix}
+=
+\begin{pmatrix}
+\mathbf{Y} \\
+\mathbf{A}
+\end{pmatrix}
+```
+This may not seem useful, but it means that we just need to calculate A as a list of 2D vectors at each timestep to simulate this problem. We can do that with the symplectic integrators because of how general they are due to numpy arrays being vectorized. To compute the derivatives, we use the following functions. This works well anyways since symplectic methods are especially useful for n-body simulation.
 
-The energy-conserving properties of symplectic integrators make them useful for the n-body problem. For this section, we will employ the 4th Order Yoshida method. Let's see how it handles a 5-body system with the following conditions.
+```python
+def GravAcc(P1, P2, M2): #acceleration on P1 from P2
+    if np.array_equal(P1, P2): #Impportant edge case
+        return np.array([0,0])
+    else:
+        return G*M2*(P2 - P1)/((np.linalg.norm(P2 - P1)**3)) #Gravitational acceleration formula
+    
+def TotalAcceleration(P, X, M): # Calculates acceleratio on P from all points in X
+    A = np.array([0, 0])
+    for i in range(len(X)):
+        A = A + GravAcc(P, X[i], M[i])
+    return A
+
+def Derivative(t, U): # U is a 2 element list. The first element is the array of position. The second is velocities
+    X, Y = U
+
+    dX_dt = Y
+    dY_dt = np.asarray([TotalAcceleration(X[i], X, M) for i in range(len(X))])
+    return [dX_dt, dY_dt]
+```
+
+Then, we can test this with five points masses. We are able to write our conditions for the system as follows.
 
 ```python
 G = 1 #Gravitational Constant 
@@ -277,13 +312,14 @@ M =  [1.0, .50, 0.50, .450, 0.450]            # Masses
 X0 = [[0,0], [2,0], [-2,0], [0,2], [0,-2]]    # Initial Positions
 V0 = [[0,0], [0,1], [0,-1], [-1,0], [1,0]]    # Initial Velocities
 ```
+Then, the simulation results are plotted.
 
 <div align="center">
   <img src="5_Body_Trajectories.png" alt="5-Body simulation" width="600">
   <p><em>Figure 5:</em> Trajectories of 5 gravitationally attracting masses.</p>
 </div>
 
-We have enough particles in this simulation to test the virial theorem. For a gravtiationally bound system, it related the averaeg kinetic and potential energy.
+We have enough particles in this simulation to test the virial theorem. For a gravtiationally bound system, it related the average kinetic and potential energy.
 
 ```math
 \langle T \rangle = -\frac{1}{2} \langle U \rangle
