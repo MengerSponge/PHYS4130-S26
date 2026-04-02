@@ -1,9 +1,9 @@
 # Project 3
 ## Introduction
-Few areas of math are as useful in physics as differential equations. However, for all of their utility in modeling physical system, the average differential equations that we encounter outisde of an introductory course lack any kind of analytic solution. This necessitates the development of numerical methods that can efficiently and accuratley approximate solutions to initial value problems. In this porject, we will examine different algorithms for solving ODEs and see how they solve the simple harmonic oscillator along with some other special cases.
+Few areas of math are as useful in physics as differential equations. However, for all of their utility in modeling physical systems, the average differential equations that we encounter outisde of an introductory course lack any kind of analytic solution. This necessitates the development of numerical methods that can efficiently and accuratley approximate solutions to initial value problems. In this project, we will show the pthon implementation for some different ODE algorithms and see how they differ in some use cases.
 
-## Algorithms and Theory
-Equations of motion in physics are typically 2nd order ODEs. However, most ODE algorithms are dervied to solve systems of coupled first order equations. Therefore, the code has been written to solve problems of them form 
+## Implementation and Theory
+Equations of motion in physics are typically 2nd order ODEs. However, most ODE algorithms are dervied to solve systems of coupled first order equations. Therefore, the code has been written to solve problems of the form 
 
 ```math
 \dot{x} = f(t,x,y)
@@ -11,37 +11,41 @@ Equations of motion in physics are typically 2nd order ODEs. However, most ODE a
 ```math
 \dot{y} = g(t,x,y)
 ```
-for some give initial conditon(s) on X and Y. A second order equation for X can be decompoed into a system of 1st order equations by letting Y be the time derivative of X and then back substituting. 
+for some give initial conditon(s) on X and Y. A 2nd order equation for X can be decompoed into a system of 1st order equations by letting Y be the time derivative of X and then back substituting. 
 ```math
 \dot{x} = y
 ```
 ```math
 \dot{y} = g(t,x,y)
 ```
-There are some nice features that have been built into the implementations that will be discsused. Seeing them here first will make understanding what comes next easier. For one, you are not limited to passing in one set of initial conditons. All of the solvers can take two lists (of equal length) for intial condtions and solve the ODE system for each of those and output the solutions. The other notable feature is how the solutions are strctured. To make the code similar, all functions out the solutions in the same structure. To see how that structure works, look at the sample code below that demonstrate how to use any of the methods. 
+Before showing how the different algorithms have been implemented, there are some nice features that have been built into the that should be discsused. For one, they are not limited to taking in one set of initial conditons. All of the solvers can take two lists (of equal length) for intial condtions and solve the ODE system for each of those and output the solutions. The other notable feature is how the solutions are strctured. To make the code uniform, all solutions outputs have the same structure. The strucutre is expplained through sample code below that demonstrate how to use any of the methods. 
 ```python
 #list of initial condtions
-X_initial = [1, 2, 3, 4]
-Y_initial = [5, 6, 7, 8]
+X_initial = [1, 2, 3]
+Y_initial = [5, 6, 7]
 
-#time range and resolution
+#time range
 tmin = 0
 tmax = 1
+
+#resolution (points between tmin and tmax)
 nts = 100
 
-#derivative structe the must be used
+#how the derivatives must be structured. U = [X, Y] is passed in as the system's current state.
 def du_dt(t, U) #U = [X, Y] 
     X, Y = U
     dx_dt = f(t, X, Y)
     dy_dt = g(t, X, Y)
-    return [dx_dt, dy_dt] #MUST be a list
+    return [dx_dt, dy_dt] #MUST be a list of this form
 
-#solution
-sol = Method(X_initial, Y_initial, tmin, tmax, du_dt) #generic method
+#solution from a generic method
+sol = Method(X_initial, Y_initial, tmin, tmax, du_dt)
 
 #How to extract information from sol
+# The first element of sol is the array of times computed at
 t = sol[0]
 
+#The following elements of sol are lists containnig the computed X and Y over time.
 X1 = sol[1][0]
 Y1 = sol[1][1]
 
@@ -51,12 +55,12 @@ Y2 = sol[2][1]
 X3 = sol[3][0]
 Y3 = sol[3][1]
 ```
-With a basic explanation how the methods will all be structured done, we can look at the different method that will be used. The first one is RK4(5). It belongs to a family of solvers known as Runge-Kutta (RK) methods. The explicit derivation is not of interest here, but a brief explanation of how this family of solvers works is useful. They are what's known as prediction corrector methods. Unlike bad solvers such as Euler's method, "predictor-corrector methods improve the approximation accuracy by querying the 𝐹 function several times at different locations (predictions), and then using a weighted average of the results (corrections) to update the state." RK4(5) is unique in that it is an adaptive method. It achieves by chagning the step size through comparing a 4th order step and a 5th order step. A python implementation is simple using the solve_ivp function from scipy.integrate. 
+With a basic explanation done, we can now look at the different method that will be used. The first one is RK4(5). It belongs to a family of solvers known as Runge-Kutta (RK) methods. The explicit derivation is not of interest here, but a brief explanation of how this family of solvers works is useful. They are what's known as prediction corrector methods. Unlike bad solvers such as Euler's method, they improve the approximation accuracy by evaluating the system several times at locations around your computation point. Then, they use a weighted average of the results to update the state. RK4(5) is unique in that it is an adaptive method. This means that it changes the step size through comparing a 4th order step and a 5th order step. This allows is to adjust the time scale to capture the relevant dynamics. A python implementation is simple using the solve_ivp function from scipy.integrate. 
 
 ```python
 from scipy.integrate import solve_ivp
 
-def RK45(X0, Y0, tmin, tmax, nts, du_dt):
+def RK45(X0, Y0, tmin, tmax, nts, du_dt): 
     t_span = (tmin,tmax)
     t = np.linspace(tmin,tmax,nts,endpoint = False)
 
@@ -64,7 +68,9 @@ def RK45(X0, Y0, tmin, tmax, nts, du_dt):
     X0 = np.asarray(X0)
     Y0 = np.asarray(Y0)
 
-    #Packaging the solutions for the way I like them. It loops over the initial conditions and       #solves. This does mean that [X1, Y1], [X2, Y2], ... can't be coupled.
+    #Packaging the solutions for the way I described above. It loops over the initial conditions and
+    #solves. This does mean that [X1, Y1], [X2, Y2], ... can't be coupled.
+
     solutions = [t]
     for i in range(len(X0)):
         sol = solve_ivp(du_dt, t_span, [X0[i], Y0[i]], t_eval = t, method = 'RK45')
@@ -73,11 +79,12 @@ def RK45(X0, Y0, tmin, tmax, nts, du_dt):
     return solutions
 ```
 
-The next method used is known as LSODA. It is another adaptive numerical solver for systems of ordinary differential equations. It was developed as part of the ODEPACK library and is designed to efficiently handle both stiff and non-stiff problems without requiring the user to decide which type of solver to use. It automatically switches between two classes of multistep methods depending on the behavior of the system. When the problem appears non-stiff, LSODA uses variable-order Adams predictor–corrector methods, which are explicit multistep schemes that are efficient for smooth solutions. If the solver detects signs of stiffness—such as instability or rapidly shrinking step sizes—it switches to Backward Differentiation Formula (BDF) methods, which are implicit and more stable for stiff systems but computationally more expensive because they require solving nonlinear equations at each step. Throughout the integration, LSODA continuously adjusts the step size and method order to satisfy user-specified error tolerances, typically expressed in terms of relative and absolute error bounds. By combining automatic stiffness detection with adaptive step size and order control, LSODA provides a robust solver that performs well across a wide range of ODE problems without requiring detailed tuning from the user. It is likewise simple to implement with solve_ivp.
+The next method is known as LSODA. It is another adaptive method for systems of ODEs. It was developed as part of the ODEPACK library and is designed to efficiently handle both stiff and non-stiff problems without requiring the user to decide which type of solver to use. It automatically switches between two classes of multistep methods depending on the behavior of the system. When the problem appears non-stiff, LSODA uses variable-order Adams predicton corrector methods, which are explicit multistep schemes that are efficient for smooth solutions. If the solver detects signs of stiffness—such as instability or rapidly shrinking step sizes, then it switches to Backward Differentiation Formula methods. These are implicit and more stable for stiff systems but computationally more expensive because they require solving nonlinear equations at each step. Throughout the integration, LSODA continuously adjusts the step size and method order. It is likewise simple to implement with solve_ivp.
 
 ```python
 from scipy.integrate import solve_ivp
 
+#This code is nearly identical to RK4(5), just one option is changed in solve_ivP
 def LSODA(X0, Y0, tmin, tmax, nts, du_dt):
     t_span = (tmin,tmax)
     t = np.linspace(tmin,tmax,nts,endpoint = False)
@@ -94,9 +101,9 @@ def LSODA(X0, Y0, tmin, tmax, nts, du_dt):
 
     return solutions
 ```
-The last two algorithms belong to a class of methods known as symplectic integrators. When possible, they conserve the volume for a continuous patch of initial condtions in phase space as it evolves in time. For physics problems, this translates to conseravation of energy. This makes them useful for long-term simulations of systems that conserve energy. 
+The last two algorithms are known as symplectic integrators. When possible, they conserve the volume for a continuous patch of initial condtions in phase space as it evolves in time. For physics problems, this translates to conseravation of energy. This makes them useful for long-term simulations of systems that conserve energy. 
 
-The first one to be considered is the velocity Verlet method. It is a second order symplectic method that works by updating position and velocity in a way that incorporates how acceleration changes over time instead of treating it as constant over a full step. Intuitively, you first use the current velocity and acceleration to “predict” where the particle will move over a small time step, giving a very accurate new position. Then, because forces may depend on position, you recompute the acceleration at this new location. Finally, you update the velocity using the average of the old and new accelerations, which captures how the force changed during the step. the solve_ivp function does not have this method as an option, so it has to be written explicitly.
+The first syplectic method is the Velocity Verlet method. It is a second order method that works by updating position and velocity in a way that incorporates how acceleration changes over time instead of treating it as constant over a full step. Intuitively, you first use the current velocity and acceleration to “predict” where the particle will move over a small time step, giving a very accurate new position. Then, because forces may depend on position, you recompute the acceleration at this new location. Finally, you update the velocity using the average of the old and new accelerations, which captures how the force changed during the step. The solve_ivp function does not have this method as an option, so it had to be written explicitly.
 
 ```python
 def VelVerlet(X0, Y0, tmin, tmax, nts, du_dt):
@@ -106,7 +113,7 @@ def VelVerlet(X0, Y0, tmin, tmax, nts, du_dt):
     X0 = np.asarray(X0)
     Y0 = np.asarray(Y0)
 
-    #Make X and Y the same  structure as the 
+    #Make X and Y the same  structure as the ICs
     X = np.zeros((len(t), ) + X0.shape)
     Y = np.zeros((len(t), ) + Y0.shape)
 
@@ -136,7 +143,7 @@ def VelVerlet(X0, Y0, tmin, tmax, nts, du_dt):
 
         return solutions
 ```
-The last method that will be used is the 4th Order Yoshida Integrator. It was devloped by plasma physicists before making its way into the other fields. The Yoshida method builds a very accurate time step by carefully combining several smaller, symmetrically arranged steps of a simpler symplectic integrator (like velocity Verlet). Instead of taking one step with a fixed update rule, it takes a sequence of substeps with specially chosen positive and negative time coefficients that cause lower-order errors to cancel out. The result is a method that remains symplectic and achieves much higher accuracy per step than other methods. Likewise, this will have to be written explicitly.
+The last method that will be used is the 4th Order Yoshida Integrator. It was devloped by plasma physicists before making its way into the other fields. The Yoshida method builds a very accurate time step by carefully combining several smaller, symmetrically arranged steps of a simpler symplectic integrator (like Velocity Verlet). Instead of taking one step with a fixed update rule, it takes a sequence of substeps with specially chosen positive and negative time coefficients that cause lower-order errors to cancel out. The result is a method that remains symplectic and achieves higher accuracy per step than other methods. Likewise, this had to be written explicitly.
 
 ```python
 def Yoshida(X0, Y0, tmin, tmax, nts, du_dt):
@@ -197,24 +204,31 @@ def Yoshida(X0, Y0, tmin, tmax, nts, du_dt):
 
         return solutions
 ```
-One last thing to note is the limits of these function. The way the RK4(5) and LSODA funtions are written, it is not possible to have a system where particles are couple together. This is because the functions merely loop over intial condtions and solve that particular problem. Since the the symplectic methods had to be written explicitly, they have much more freedom in what they can do. If you write your system correctly and express the derivative properly, these methods can treat the lists of initial conditions as interacting particles. Of course, if you instead want to solve the same problem for different sets of inital conditions, that is still possible too. You just don't couple your derivatives of one trajectory to the others. This makes them highly flexible! They take full advantage of the vectorization of numpy arrays. The symplectic methods can solve something like the SHO for multiple ICS up to the n-body problem for as many bodies as you input without changing the function at all. We will see all of these uses in the following sections.
+One last thing to note is the limits of these function. Because of how the RK4(5) and LSODA funtions are written, it is not easy to have a system where particles are coupled together. This is because the functions merely loop over intial condtions and solve that particular problem. Since the the symplectic methods had to be written explicitly, they have much more freedom in what they can do. If you write your system correctly and express the derivative properly, these methods can treat the lists of initial conditions as interacting particles. Of course, if you instead want to solve the same problem for different sets of inital conditions, that is still possible too. You just don't couple your derivatives of one trajectory to the others. This makes them highly flexible! They achieve this by taking full advantage of the vectorization of numpy arrays. The symplectic methods can solve something like the SHO for multiple ICS up to the n-body problem for as many bodies as you input without changing the function at all. We will see all of these uses in the following sections.
 
-## Simple Harmonic Oscillator
+## Simple Harmonic Oscillator (SHO)
 
-The first system that we will investigate the simple harmonic oscillator with and without damping. To simplify the equations, the equillbrium position is taken to be the origin so that erroneous terms accounting for the length of the spring do not have to be accounted for. Newton's Second Law gives the following equations of motion.
+The first system that we will investigate the SHO with and without damping. To simplify the equations, the equillbrium position is taken to be the origin so that erroneous terms accounting for the length of the spring do not have to be accounted for. Hooke's Law combined with Newton's Second Law gives the following equations of motion.
 
 ```math
 \ddot{x} = \frac{c}{m} \dot{x} + \frac{k}{m} x
 ```
-Here, k is the spring constant, m is the mass, and c is the damping strength. For the integrators, we need to express this system as a coupled system of first order equations. 
+Here, k is the spring constant, m is the mass, and c is the damping strength. For the integrators, we need to express this problem as a coupled system of 1st order equations. 
 
 ```math
 \dot{x} = y
+\qquad
+\dot{y} = -\frac{c}{m} y - \frac{k}{m} x
 ```
+Then, we will want to write this as a vector equation so that we know what the form of the derivative will be. 
+
 ```math
-\dot{y} = -\frac{b}{m} y - \frac{k}{m} x
+\frac{d}{dt}
+\begin{pmatrix} x \\ y \end{pmatrix}
+=
+\begin{pmatrix} y \\ -\frac{c}{m} y - \frac{k}{m} x \end{pmatrix}
 ```
-For the way my code is configured, we need to express the derivatives of the system in a specfic way.
+For the way the code is written, we need to express the derivatives of the system in a specfic way.
 ```python
 
 k = 1 # N/m        (spring constant)
@@ -230,7 +244,7 @@ def SHO_damped(t, u): #derivative, u = [X, Y]
     dy_dt = -(k/m)*x  - (c/m)*y
     return [dx_dt, dy_dt]
 ```
-Let's first look at how the this system evolves over time with no damping for the different integrators. 
+Let's first look at how the this system evolves over time with no damping for some of the integrators. 
 
 <div align="center">
   <img src="SHO_Phase.png" alt="Undamped Trajectories" width="600">
@@ -240,28 +254,28 @@ Let's first look at how the this system evolves over time with no damping for th
 We can see that this traces out an ellipse in phase space, which is what we expect for the analytic solution for system. However, these methods are not outputting the exact same trajectory in phase space. You can resolve the difference by zooming in the plot range, but this is a good oppurtunitty to see how the total mechanical enerergy of this system evolves with the different methods. Physically, we know that it should be conserved because spring forces are conservative, but not all numeriacl methods conserve energy.
 
 <div align="center">
-  <img src="SHO_Energy.png" alt="Undamped Energies" width="600">
+  <img src="SHO_Energy.png" alt="Undamped Energies" width="800">
   <p><em>Figure 2:</em> Plots of the energies for the undamped SHO for three different integrators.</p>
 </div>
 
-This shows a large distinction among these three methods. We see that the symplectic method oscillates near the true energy, while the RK4(5) and LSODA methods accumulate error over time that causes them to drift from the true solution. Since RK4(5) and LSODA unavoidably accumulate drift in the energy over time, Veleocity Verlet might be considered better for long term solutions to this problem despite being a lower order method. Of course, this isn't a complicated problem, but, for somehing more complex, energy drift is signifigant. Now, we can introduce damping to this system and see how that affects the numeriacl solutions. 
+This shows a large distinction among these three methods. We see that the symplectic method oscillates near the true energy, while RK4(5) and LSODA unavoidably accumulate drift in the energy over time. For this reason, Veleocity Verlet might be considered better for long term solutions to this problem despite being a lower order method. Of course, this particular system isn't complicated, but energy drift is signifigant for mor sensitive problems. Now, we can introduce damping to this system and see how that affects the numeriacl solutions. 
 
 <div align="center">
   <img src="SHO_Damped_Phase.png" alt="Damped Trajectories" width="600">
   <p><em>Figure 3:</em> Plots of the phase space trajectories for the damped SHO for three different integrators.</p>
 </div>
 
-As expected, the system is now losing energy to viscous forces. This causes it to spiral down to the origin, which for this system is the state with no energy. We see the same behavior for the energy of this system.
+As expected, the system is now losing energy to viscous forces. This causes it to spiral down to the origin, which for this system is the state with no energy. We see the same behavior in the energy.
 
 <div align="center">
-  <img src="SHO_Damped_Energy.png" alt="Damped Energies" width="600">
+  <img src="SHO_Damped_Energy.png" alt="Damped Energies" width="800">
   <p><em>Figure 4:</em> Plots of the energy over time for the damped SHO for three different integrators.</p>
 </div>
 
-In this case, Velocity Verlet just behaves as a second order integrator. Therefore, it has lost the advantage it had over RK4(5) and LSODA.
+In this case, Velocity Verlet just behaves as a second order integrator. Since energy is no longer conserved, it has lost the advantage it had over RK4(5) and LSODA.
 
 ## n - Body Problem and the Virial Theorem
-Too simulate the n-body problem, we need to develop some more complicated theory than the SHO. We can derive approximate equations for the gravitational field produced by a point of mass M by using the weak-field limit of the Einstein field equations. When doing so, we can obtain Newton's universal law of gravitation. 
+To simulate the n-body problem, we need to develop some more complicated theory than the SHO. We can derive approximate equations for the gravitational field produced by a point of mass M by using the weak-field limit of the Einstein field equations. When doing so, we can obtain Newton's universal law of gravitation. 
 
 ```math
 \mathbf{g}(\mathbf{x}) = -G M \frac{\mathbf{x}}{x^3}
@@ -271,13 +285,13 @@ Where x is the position vector from the mass point to the field point, and G is 
 ```math
 \mathbf{a}_j = - \sum_{\substack{i=1 \\ i \neq j}}^{n} G m_i \frac{\mathbf{x}_j - \mathbf{x}_i}{\lvert \mathbf{x}_j - \mathbf{x}_i \rvert^3}
 ```
-Now, the positon vectors are taken to be relative to the origin of the system. We want to express this a coupled first order system, so let y denote velocities.
+Now, the positon vectors are taken to be relative to the origin of the system. We want to express this as a coupled 1st order system, so let y denote velocities.
 ```math
 \dot{\mathbf{x}}_j = \mathbf{y}_j,
 \qquad
 \dot{\mathbf{y}}_j = - \sum_{\substack{i=1 \\ i \neq j}}^{n} G m_i \frac{\mathbf{x}_j - \mathbf{x}_i}{\lvert \mathbf{x}_j - \mathbf{x}_i \rvert^3}
 ```
-Now, we've essentially written this as a first order system. We can repackage these results to resemble oher system. Let X be the vector whose components are the positions x_j, then let Y be the vector whose components are y_j, lastly let A be the vector whose components are a_j. Then, our system can be written in the highly absctraced form
+Now, we can repackage this to resemble oher systems. Let X be the vector whose components are the positions x_j, then let Y be the vector whose components are y_j, lastly let A be the vector whose components are a_j. Then, our system can be written in the highly absctraced form
 
 ```math
 \frac{d}{dt}
@@ -289,13 +303,13 @@ Now, we've essentially written this as a first order system. We can repackage th
 \begin{pmatrix}
 \mathbf{Y} \\
 \mathbf{A}
-\end{pmatrix}
+\end{pmatrix}.
 ```
-This may not seem useful, but it means that we just need to calculate A as a list of 2D vectors at each timestep to simulate this problem. We can do that with the symplectic integrators because of how general they are due to numpy arrays being vectorized. To compute the derivatives, we use the following functions. This works well anyways since symplectic methods are especially useful for n-body simulation.
+This may not seem useful, but it means that we just need to calculate A as a list of 2D vectors at each timestep to simulate this problem. We can do that with the symplectic integrators because of how general they are. This works well too since symplectic methods are especially useful for n-body simulation. Since it had not been used yet, this will be done with the Yoshida method. To compute the derivatives, we use the following functions. 
 
 ```python
 def GravAcc(P1, P2, M2): #acceleration on P1 from P2
-    if np.array_equal(P1, P2): #Impportant edge case
+    if np.array_equal(P1, P2): #no self interaction
         return np.array([0,0])
     else:
         return G*M2*(P2 - P1)/((np.linalg.norm(P2 - P1)**3)) #Gravitational acceleration formula
@@ -322,20 +336,60 @@ M =  [1.0, .50, 0.50, .450, 0.450]            # Masses
 X0 = [[0,0], [2,0], [-2,0], [0,2], [0,-2]]    # Initial Positions
 V0 = [[0,0], [0,1], [0,-1], [-1,0], [1,0]]    # Initial Velocities
 ```
-Then, the simulation results are plotted.
+Here are the results for these condtions.
 
 <div align="center">
   <img src="5_Body_Trajectories.png" alt="5-Body simulation" width="600">
   <p><em>Figure 5:</em> Trajectories of 5 gravitationally attracting masses.</p>
 </div>
 
-We have enough particles in this simulation to test the virial theorem. For a gravtiationally bound system, it related the average kinetic and potential energy.
+We have enough particles in this simulation to test the virial theorem. For a gravtiationally bound system, it relates the average kinetic and potential energy.
 
 ```math
 \langle T \rangle = -\frac{1}{2} \langle U \rangle
 ```
+First, here's how you can calculate the energies.
+```python
+def Kinetic_Over_Time(sol): #takes the solution made by Yoshida method and finds the kinetic energy over time
 
-Let's first see how the kinetic and potential energy evolves over time.
+    velocities = [V[1] for V in sol[1:]]
+    T = [] #kinetic energy
+
+    for i in range(len(sol[0])): #loop over the velocities at the current time
+        v = [U[i] for U in velocities] #selects the ith term in velocities
+        q = [0.5*M[j]*(np.linalg.norm(v[j])**2) for j in range(len(v))]
+
+        T.append(sum(q))
+
+    return T
+
+def Potential(positions, masses, G): #takes in the positions at a time and outputs the potential
+
+    positions = np.asarray(positions)
+    masses = np.asarray(masses)
+
+    N = len(masses)
+    U = 0.0
+
+    #carefully done to avoid double summing
+    for i in range(N):
+        for j in range(i + 1, N):
+            r = np.linalg.norm(positions[i] - positions[j])
+            if r != 0:
+                U -= G * masses[i] * masses[j] / r
+    return U
+
+def Potential_Over_Time(sol): #Uses the potential function to find the potential at all points in time
+    All_positions = [X[0] for X in sol[1:]]
+
+    Potential_Energies = []
+    for i in range(len(sol[0])): #do over time
+        positions = [X[i] for X in All_positions] #goes over all the trajectoreis
+        Potential_Energies.append(Potential(positions, M, G))
+
+    return Potential_Energies
+```
+Now, let's first see how the kinetic and potential energy evolves over time for this system.
 
 <div align="center">
   <img src="5_Body_Energies.png" alt="5-Body Energies" width="600">
@@ -358,7 +412,7 @@ Which is pretty close to the -1/2 we would expect, so we can be reasonably sure 
 
 ## Phase Space Volume and Symplectic Methods
 
-Symplectic methods are characterized as conserving volume in phase space. This is something we can analyze with our undamped simple harmonic oscillator. Since this system follows the trajectory of one particle, we have a two dimensional phase space: Velocity vs Position. So, our volume becomes an area. Then, the algorithm is relativly simple. We want to see how the are of a small patch of initial conditions in phase space evolves over time. To achieve this, we generate a list of random initial conditions that are close. This will approximate our patch of area. Then, we will use the concave_hull and shapely.geometry packages to generate a concave hull around our points as they evolve in time and calculate the area using the polygon object. Here is some sample code for how this can be done the Velocity Verlet method.
+Symplectic methods are characterized as conserving volume in phase space. This is something we can observe with our undamped SHO. Since this system describes the trajectory of one particle, we have a two dimensional phase space: Velocity vs Position. So, our volume becomes an area. Then, the algorithm is relativly simple. We want to see how the are of a small patch of initial conditions in phase space evolves over time. To achieve this, we generate a list of random initial conditions that are close. This will approximate our patch of area. Then, we will use the concave_hull and shapely.geometry packages to generate a concave hull around our points as they evolve in time and calculate the area using the polygon object. Here is some sample code for how this can be done the Velocity Verlet method.
 
 ```python
 from concave_hull import concave_hull
@@ -392,7 +446,7 @@ We will compare the Velocity Verlet and Yoshida methods to LSODA. RK4(5) was omi
   <p><em>Figure 7:</em> Plots of the phasae space volums over time for the undamped SHO for three different integrators.</p>
 </div>
 
-The two symplectic methods seem to be conserving phase space volume while LSODA is accumulating more error as the simulation continues! Now, let's see what happens when damping is introduced.
+The two symplectic methods seem to be conserving phase space volume while LSODA is accumulating more error as the simulation continues. Now, let's see what happens when damping is introduced.
 
 <div align="center">
   <img src="SHO_Damped_Volume.png" alt="Damped Phase Volumes" width="600">
@@ -402,13 +456,21 @@ The two symplectic methods seem to be conserving phase space volume while LSODA 
 Now, all methods have the volume decaying to zero. This is not surprising of course. This system no longer conserves energy, and all initial conditions should tend towards the zero energy state at the origin. So, since all points get closer over time, the phase space area will decrease.
 
 ## Conclusion
-(Idea to inclulde in this section: Which integrator is the best? There is not one that is objectively better than the others. The one that you choose depends on the the problem you are trying to solve and the context of your field.)
+The method you want to use for your problem depends on the context of your work. If you are trying to create a high fidelity simulation for resarch, and you have the time and computational resources to do so, then you probably want to opt for a higher order method and/or smaller time steps (up to a point). Also, knowing your system helps in choosing your integrator. If it conserves energy, then you can choose a sumplectic integrator and may get away with a larger step size. Furthermore, lower order methods generally perform quite well if you don't need high precision or your limited in resources. 
 
 ## Attribution
-The book 
+Wikipedia was used for the coefficients of the Yoshida method. "Computational Physics" by Prof. Mark Newmann from MSU was used as well as "Computational Physics in Python" from the assignment description.
 
 ## Timekeeping
 I spent about 20 hours on the code and about 10 hours on the write up.
 
+## A Note on Error 
+I tried for an extremely long time to get a nice plot of relative error for these methods. Howevr, RK4(5) and LSODA kept producing flat errors. I susptect this is because they are adaptive, and they take the error as low as their initial tolerance no matter what. It wouldn't make sense to change that in my opinion since the error is then whatver I choose it to be, not something that responds to step size. Here is the plot I was able to produce.
+
+<div align="center">
+  <img src="errors_attempt.png" alt="Relative Errors vs Stepsize" width="600">
+  <p><em>Figure 9:</em> Plots of the relative errors as the step szie decreases for the SHO.</p>
+</div>
+
 ## Languages, Libraries, Lessons Learned
-Everything was written in python. I made an effort to write all of my code to be highly reusable. This meant that the same function I use to simulate the SHO could be used to simulate the n-body problem. 
+Everything was written in python. The libraries used were numpy, scipy, matplotlib, concave_hull, and shapely. I learned to get really good at indexing and dealing with high-dimensional monsters.

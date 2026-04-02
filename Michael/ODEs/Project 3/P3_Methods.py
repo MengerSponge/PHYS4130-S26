@@ -5,7 +5,7 @@ from scipy.integrate import solve_ivp
 # These take in X0 and Y0 as lists of initial conditions
 def RK45(X0, Y0, tmin, tmax, nts, du_dt):
     t_span = (tmin,tmax)
-    t = np.linspace(tmin,tmax,nts,endpoint = False)
+    t = np.linspace(tmin,tmax,nts,endpoint = True)
     
     X0 = np.asarray(X0)
     Y0 = np.asarray(Y0)
@@ -19,7 +19,7 @@ def RK45(X0, Y0, tmin, tmax, nts, du_dt):
 
 def LSODA(X0, Y0, tmin, tmax, nts, du_dt):
     t_span = (tmin,tmax)
-    t = np.linspace(tmin,tmax,nts,endpoint = False)
+    t = np.linspace(tmin,tmax,nts,endpoint = True)
     
     X0 = np.asarray(X0)
     Y0 = np.asarray(Y0)
@@ -46,7 +46,7 @@ def LSODA(X0, Y0, tmin, tmax, nts, du_dt):
 
 # Velocity verlet (2nd order algorithm)
 def VelVerlet(X0, Y0, tmin, tmax, nts, du_dt):
-    t = np.linspace(tmin,tmax,nts,endpoint = False)
+    t = np.linspace(tmin,tmax,nts,endpoint = True)
 
     #Doing this allows me to vectorize the solver, so X0 and Y0 can be arrays of initial conditions.
     X0 = np.asarray(X0)
@@ -83,7 +83,7 @@ def VelVerlet(X0, Y0, tmin, tmax, nts, du_dt):
 
 # 4th Order Yoshida Method (4th order version)
 def Yoshida(X0, Y0, tmin, tmax, nts, du_dt):
-    t = np.linspace(tmin,tmax,nts,endpoint = False)
+    t = np.linspace(tmin,tmax,nts,endpoint = True)
 
     X0 = np.asarray(X0)
     Y0 = np.asarray(Y0)

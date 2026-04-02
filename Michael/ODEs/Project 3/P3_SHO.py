@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from P3_Methods import RK45, LSODA, VelVerlet, Analytic
+from P3_Methods import RK45, LSODA, VelVerlet, Analytic, Yoshida
 
 # Notes ----------------------------------------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ from P3_Methods import RK45, LSODA, VelVerlet, Analytic
 # Simple harmonic oscillator. Take x = 0 as the equillibrim point.
 # The derivative functions need to return a list [dx_dt, dy_dt]
 
-k = 1 # N/m        (spring constant)
+k = 1.1 # N/m        (spring constant)
 m = 1 # kg         (mass)
 c = 0.5 # N/(m/s) (damping term strength)
 
@@ -88,8 +88,6 @@ plt.xlabel("Time (s)")
 plt.ylabel("Energy (J)")
 plt.show()
 
-
-
 # LSODA Calculations ---------------------------------------------------------------------------------------------------------
 
 solution = LSODA([X0], [Y0], tmin, tmax, nts, SHO)
@@ -126,7 +124,7 @@ plt.ylabel("Velocity (m/s)")
 plt.show()
 
 plt.plot(t, Energy(XVerlet_Undamped, YVerlet_Undamped))
-plt.axhline(y = E0, color = 'r', linestyle = '-')
+plt.axhline(y = E0, color = 'r', linestyle = '-', label = "True Energy")
 plt.title("Velocity Verlet Energy vs Time (Undamped)")
 plt.xlabel("Time (s)")
 plt.ylabel("Energy (J)")
@@ -217,52 +215,56 @@ plt.show()
 # Relative Error Computations and Plotting --------------------------------------------------------------------------
 
 #redefine these here so that I don't have to keep scrolling to change tmin and tmax
+
+X0 = 4
+Y0 = 0
+
+k = 0.75
+m = 1.22
+
 tmin = 0
-tmax = 25
+tmax = 30
 
 def RelErr(Analytic, Numeric): #This is cleaner than typing out this formula a bunch imo
     return np.abs((Numeric - Analytic)/Analytic)
 
-nts = [i for  i in range(2,100)]
+nts = range(50, 200)
 
-errRK = np.zeros(len(nts))
-errLSODA = np.zeros(len(nts))
-errVerlet =  np.zeros(len(nts))
+errRK =[]
+errLSODA = []
+errVerlet = []
+errYoshida = []
+dt_array = []
 
-X_Analytic = Analytic(X0, Y0, c, k, m, tmax)
-
+X_Analytic = Analytic(X0, Y0, 0, k, m, tmax)
 for i, n in enumerate(nts):
 
-    solution = RK45([X0], [Y0], tmin, tmax, n, SHO_damped)
-    t = solution[0]
+    solution = RK45([X0], [Y0], tmin, tmax, n, SHO)
     X = solution[1][0]
-    errRK[i] = RelErr(X_Analytic, X[len(X) - 1])
+    errRK.append(RelErr(X_Analytic, X[len(X) - 1]))
 
-    solution = LSODA([X0], [Y0], tmin, tmax, n, SHO_damped)
-    t = solution[0]
+    solution = LSODA([X0], [Y0], tmin, tmax, n, SHO)
     X = solution[1][0]
-    errLSODA[i] = RelErr(X_Analytic, X[len(X) - 1])
+    errLSODA.append(RelErr(X_Analytic, X[len(X) - 1]))
 
-    solution = VelVerlet([X0], [Y0], tmin, tmax, n, SHO_damped)
-    t = solution[0]
+    solution = VelVerlet([X0], [Y0], tmin, tmax, n, SHO)
     X = solution[1][0]
-    errVerlet[i] = RelErr(X_Analytic, X[len(X) - 1])
+    errVerlet.append(RelErr(X_Analytic, X[len(X) - 1]))
 
-solution = VelVerlet([X0], [Y0], tmin, tmax, n, SHO_damped)
-t = solution[0]
-X = solution[1][0]
-print(X[1])
-print(type(X[1]))
-plt.plot(nts,errRK, label = "RK4(5)")
-plt.plot(nts,errLSODA, label = "LSODA")
-plt.plot(nts,errVerlet, label = "Velocity Verlet")
+    solution = Yoshida([X0], [Y0], tmin, tmax, n, SHO)
+    X = solution[1][0]
+    errYoshida.append(RelErr(X_Analytic, X[len(X) - 1]))
 
-plt.xlabel("Step Count")
+    t = solution[0]
+    dt_array.append(t[1] - t[0])
+
+plt.plot(dt_array, errRK, label = "RK4(5)")
+plt.plot(dt_array, errLSODA, label = "LSODA")
+plt.plot(dt_array, errVerlet, label = "Velocity Verlet")
+plt.plot(dt_array, errYoshida, label = "Yoshida")
+
+plt.xlabel("Step Size (s)")
 plt.ylabel("Relative Error")
-plt.xscale("log")
-plt.yscale("log")
-#plt.ylim(0, 0.75)
-#plt.xlim(0,1000)
-plt.title("Relative Error vs Step Count")
+plt.title("Relative Error vs Step Size")
 plt.legend()
 plt.show()
