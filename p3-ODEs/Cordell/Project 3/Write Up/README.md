@@ -355,4 +355,4 @@ Week of 4/1
 Main thing I got caught up on for a few hours yesterday was when I realized Scipy's RK4 was doing its own thing with the time steps.
 
 ## Languages, Libraries, Lessons Learned
-I thought Scipy's RK4(5) was frustrating for what I wanted to do because it wouldn't let me tell it how many time steps to use. I feel like you have less freedom when using something from a library sometimes.
+I used Scipy, Numpy and matplotlib. I thought Scipy's RK4(5) was frustrating for what I wanted to do because it wouldn't let me tell it how many time steps to use. I feel like you have less freedom when using something from a library sometimes.
