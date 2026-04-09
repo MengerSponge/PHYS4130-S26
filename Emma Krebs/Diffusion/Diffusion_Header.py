@@ -16,7 +16,7 @@ class Node:
         self.depth = depth
         self.leaf = True
         self.children = [None, None, None, None, None, None, None, None]
-        self.particles = []
+        self.particles = None # Each Node will only hold one particle at a time for its leaves
 
     
 class Particle:
@@ -57,8 +57,11 @@ def subdivide(node, depth_value, center):
         depth = node.depth + 1 # Update depth
         grid_value = node.grid[0] / 8
         grid = [grid_value, grid_value, grid_value]
-        for i in len(range(8)):
+        for i in range(8):
             node.children[i] = Node(center/4, grid, depth)
+        index = sort_particles_subdivision(node)
+        node.children[index].particles = node.particles
+        return None
     else:
         return None
 
@@ -107,10 +110,11 @@ def generation_sphere(current_maximum, generation_distance, center):
     '''
 
     radius = current_maximum + generation_distance
+    u = random.uniform(0,1)
 
     # From a source in document to create a sphere with equally likely random points on it
-    theta = 2*np.pi*random
-    phi = np.arccos(1 - 2*random)
+    theta = 2*np.pi*u
+    phi = np.arccos(1 - 2*u)
     px = round(np.sin(phi) * np.cos(theta) * radius) + center[0]
     py = round(np.sin(phi) * np.sin(theta) * radius) + center[1]
     pz = round(np.cos(phi) * radius) + center[2]
@@ -134,7 +138,7 @@ def kill_or_be_killed(location, kill_radius, max_distance, center):
         Returns:
             Test (boolean): Tells us if this has exited the region of consideration. 
     '''
-    radius_center = np.sqrt((location[0] - center[0])**2 + (location[1] - center[1])**2 (location[2] - center[2])**2)
+    radius_center = np.sqrt((location[0] - center[0])**2 + (location[1] - center[1])**2 + (location[2] - center[2])**2)
 
     rad = kill_radius + max_distance
     if radius_center >= rad:
@@ -153,6 +157,7 @@ def find_node(root, point):
         
         Returns:
             locations_of_particle (Array): Returns an array of all nearby particle locations
+            value (int): Index of child node for point location
     '''
 
     # From the wiki, we can use the color quantization program which determines the child node 
@@ -164,11 +169,13 @@ def find_node(root, point):
     # This will loop until it finds the leaf node to extract the particles
     while node.leaf != True:
 
+        value = 0
+
         if  point[0] >= root.center[0]:
             value |= 4
         if point[1] >= root.center[1]:
             value |= 2
-        if point[3] >= root.center[2]:
+        if point[2] >= root.center[2]:
             value |= 1
         
         # Example: Say we said yes to all three if statements. Then we have 7 and that represents
@@ -176,15 +183,74 @@ def find_node(root, point):
 
         found_node = node.children[value]
         if found_node.leaf == True:
-            continue
+            node = found_node
+            break
         else:
             node = found_node
 
-    particle_array = found_node.particles
+    particle_array = node.particles
 
     location_of_particles = []
     for particle in particle_array:
         location_of_particles.append(particle.location)
 
-    return location_of_particles
+    return location_of_particles, value
 
+
+def stickiness(location_list, particle):
+    '''
+        The function that determines if a particle will stick. 
+
+        Args:
+            location_list (Array): Array of all neighborhood particle locations
+            particle (Object): The object of our moving particle.
+
+        Returns:
+            Boolean: Returns true if particle sticks. Returns false if it doesn't.
+
+    '''
+    # Find all the particles that are close enough to stick
+    close_distance = []
+    for location in location_list:
+        distance = np.sqrt((location[0] - particle.location[0])**2 + (location[1] - particle.location[1])**2 + (location[2] - particle.location[2])**2)
+        if distance <= 1:
+            close_distance.append(location)
+
+    # If there was nothing close enough, return false
+    if len(close_distance) == 0:
+        return False 
+    else: 
+        for close_loc in close_distance:
+            prob = particle.probability
+
+            if random.uniform(0, 1) <= prob:
+                return True
+            else:
+                return False
+
+
+def sort_particles_subdivision(node):
+    '''
+        Sort particle so its in its new leaf node.
+
+        Args:
+            node (object): The node that is getting subdivided and needs to relocate its children
+        
+        Returns:
+            value (int): Index of child node where particle will now reside. 
+    '''
+    # Need to find index, so we will use color method again.
+    particle = node.particles
+
+    location = particle.location
+
+    value = 0
+
+    if location[0] >= node.center[0]:
+            value |= 4
+    if location[1] >= node.center[1]:
+            value |= 2
+    if location[2] >= node.center[2]:
+            value |= 1
+
+    return value
