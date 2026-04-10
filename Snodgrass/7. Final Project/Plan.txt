@@ -1,0 +1,4 @@
+Week 1:
+- Py.Torch
+- PINNs
+- Become familiar
