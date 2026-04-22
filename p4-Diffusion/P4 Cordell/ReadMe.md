@@ -1,11 +1,53 @@
+In this project, we model diffusion limited aggregation for a 2D system with a uniform flux of incoming particles from an infinite radius. We evaluate the capacity dimension of our simulated aggregate at different values of stickiness and radius then compare our results to the known DLA capacity dimension value of 1.7[1]. In addition, we evaluate the consistency of the capacity across different spawn radii to evaluate the effect of the spawn radius on the accuracy of our model. Our simulation yields a capacity dimension of 1.26 which is not very consistent with the expected value of 1.7 but remains consistent with itself as stickiness is varied. We also find that the capacity dimension of our model remains consistent for radius values approaching the aggregate. This result supports the idea that the spawn radius and stickiness do not alter the accuracy of the model.
+
 # Introduction
+As particles move through a medium such as air or water, they can bounce off other particles which effects their motion. This phenomena is referred to as Brownian motion. Now, suppose a seed exists that incoming particles can stick to and once a particle sticks to the seed, it becomes a part of the seed. This process is called diffusion-limited aggregation (DLA), and it is observed in many physical systems such as crystal formation.
 
-## Background Theory
+DLA can be modeled using a simulation in which Brownian motion is simulated as a random walk. In other words, DLA is a process in which particles take random walks in a region where there exists a seed to which the particles stick. As more particles stick to an aggregate it forms into a fractal with a certain property that pertains to its geometry. This property is known as  capacity dimension, and it can have non-integer values as opposed to topological dimension. It is defined as Eq. 1 and can be estimated by overlaying space with boxes of side length $\epsilon$ and counting the number of boxes, N, that contain part of the aggregate. This process is repeated for decreasing $\epsilon$ then $\ln N(\epsilon)$ vs. $\ln (\frac{1}{\epsilon})$ is plotted where the slope yields the capacity dimension.
 
+$$
+D_C=\lim_{\epsilon\to 0}\frac{\ln N(\epsilon)}{\ln\left(\frac{1}{\epsilon}\right)}
+\qquad\text{(1)}
+$$
+where $D_{C}$ is the capacity dimension, $\epsilon$ is the size of boxes, and N is the number of boxes. Furthermore, the expected value of the capacity dimension of a DLA fractal is 1.7 [1]. Accordingly, the capacity dimension of a simulated aggregate can be compared with this value to evaluate the accuracy of the simulation.
+
+
+\\\\\
+\\\
+
+*
+The capacity dimension can additionally be used to evaluate the effects of certain aspects of the model on its accuracy. 
 # Procedure 
+Describe algorithm in a step by step manner:
+1.  define space array
+```python
+```
+2. define spawn radius
+```python
+```
+3. etc
+```python
+```
 
-## Ultimate DLA Simulation Code
 
+
+
+# Analysis 
+Fig: Capacity Dimension for N=5000
+
+The capacity dimension is 1.28. This is not very close to the expected value of 1.7. Why?
+
+Fig: Capacity Dimension vs S
+
+Fig: Capacity Dimension vs R
+
+Fig: Compares Capacity dimension for two different spawn radius conditions
+# Conclusions
+
+# References
+[1]
+
+# Appendix
 ### Changelog Summary
 The code described above took a long time to optimize the runtime for large N. Below, we share the trials and errors that led up to the code above.
 #### Periodic Boundary Conditions
@@ -120,8 +162,3 @@ We found that making the particles bounce off the walls was more efficient than 
             if x < length - 1:
                 x += 1
 ```
-
-
-# Analysis 
-
-# Conclusions
