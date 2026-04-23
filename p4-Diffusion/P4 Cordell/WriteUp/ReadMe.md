@@ -175,7 +175,94 @@ Altogether, we cannot confidently say that our model is highly accurate as our e
 
 # Appendix
 ## Extension 1
+In 3D the mass-radius estimation of the fractal dimension is 2.13 for 5000 particles. This is greater than the fractal dimension in 2D, but you would expect the fractal dimension to be greater in higher dimensions.
+
+<p align="center">
+  <img src="E1.png" alt="Figure 9" width="70%">
+</p>
+
+<p align="center">
+  Figure 5: <em>Mass-radius estimation of fractal dimension for 5,000 particles in 3D.</em>
+</p>
+
+Logic-wise this was easy to implement in my code. I just had to make everything 3D. For example, this is the new spawn function:
+```python
+def spawn(radius):
+    # generates a random angle between 0 and 2pi
+    theta = np.random.uniform(0, 2 * np.pi)                                  
+    # random angle between 0 and pi                               
+    phi = np.random.uniform(0, np.pi)               
+    x = int(round(radius * np.sin(phi) * np.cos(theta)))
+    y = int(round(radius * np.sin(phi) * np.sin(theta)))
+    z = int(round(radius * np.cos(phi)))
+    return x, y, z
+```
 ## Extension 2
+Using a triangle lattice in 2D space does not really change the behavior. The fractal dimension estimated using the mass-radius method is consistent with the original 2D estimation. 
+<p align="center">
+  <img src="E2.png" alt="Figure 9" width="70%">
+</p>
+
+<p align="center">
+  Figure 5: <em>Mass-radius estimation of fractal dimension for 5,000 particles in a 2D triangle lattice.</em>
+</p>
+
+By treating the rows as offset by 1, I modeled the a triangle lattice around the particle. So, although the space array does not represent a triangle lattice, the particle is restricted to move on triangle lattice sites.
+```python
+        direction = random.randrange(6)
+        
+        new_x, new_y = x, y
+
+        if y % 2 == 0:   # treats rows as offset by 1
+            if direction == 0:
+                new_y += 1
+            elif direction == 1:
+                new_y -= 1
+            elif direction == 2:
+                new_x -= 1
+            elif direction == 3:
+                new_x += 1
+            elif direction == 4:
+                new_x -= 1
+                new_y -= 1
+            else:
+                new_x -= 1
+                new_y += 1
+        else:            # treating rows as offset by 1
+            if direction == 0:
+                new_y += 1
+            elif direction == 1:
+                new_y -= 1
+            elif direction == 2:
+                new_x -= 1
+            elif direction == 3:
+                new_x += 1
+            elif direction == 4:
+                new_x += 1
+                new_y -= 1
+            else:
+                new_x += 1
+                new_y += 1
+```
+
+```python
+            if y % 2 == 0:
+                if ((space[x-1, y] or space[x+1, y] or space[x,   y-1] or
+                     space[x,   y+1] or space[x-1, y-1] or space[x-1, y+1]) 
+                     and not space[x, y]):       
+
+                    if np.random.rand() < stickiness:                               # Chance of sticking to the seed is the stickiness factor
+                        space[x, y] = seed
+                        heat[x, y] = i + 1                                          # tracks the age of the particle that sticks to the seed
+                        resizing_square(i, x, y)
+                        resizing_circle(i, x, y)
+                        break                     
+            else:
+                if ((space[x-1, y] or space[x+1, y] or
+                     space[x,   y-1] or space[x,   y+1] or
+                     space[x+1, y-1] or space[x+1, y+1]) 
+                     and not space[x, y]):
+```
 
 ### Attribution
 [Diffusion-Limited Aggregation, a Kinetic Critical Phenomenon (1981 PRL)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.47.1400)
