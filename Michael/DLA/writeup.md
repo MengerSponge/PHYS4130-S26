@@ -236,4 +236,26 @@ With all the pieces in place we can start creating DLA fractals and computing th
 ## Capacity Dimension Vs Stickyness
 The stickyness affectst the liklihood of a particle sticking once it reaches the aggregate. We can see its affects by generating some plots as the stickyness decreases from 1.
 
+<div align="center">
+  <img src="S1.png" alt=Stickyness = 1" width="600">
+  <p><em>Figure 1:</em> Aggregate with S = 1 and N = 5000.</p>
+</div>
 
+<div align="center">
+  <img src="S05.png" alt=Stickyness = 0.5" width="600">
+  <p><em>Figure 2:</em> Aggregate with S = 0.5 and N = 5000.</p>
+</div>
+
+<div align="center">
+  <img src="S01.png" alt=Stickyness = 0.1" width="600">
+  <p><em>Figure 3:</em> Aggregate with S = 0.1 and N = 5000.</p>
+</div>
+
+When we generate this for many more values of the stickyness, we get a plot that looks something like this:
+
+<div align="center">
+  <img src="CapacityVStciky.png" alt=Capacity V Stciky" width="600">
+  <p><em>Figure 4:</em> Effects of stickyness on the dimension for aggregates with N = 5000 points.</p>
+</div>
+
+We can clearly see that as S decreases, the dimension increases towards two. This is because the stickyness being smaller allows particles to meander around near the aggregate. When they finally stick, they form clumps instead of the thin branches procduced by immediatley sticking. 
