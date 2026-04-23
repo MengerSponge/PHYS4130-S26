@@ -134,7 +134,36 @@ if touching and neighbor_count == 1: # Avoid overfilling and focus on tip growth
 
 Here we find that Diffusion_Main.py cycles through the neighbors, checking each grid position if any of the values equal 1. If it does, that means there's a possible particle to stick to, so it tells the program that the moving particle is touching the aggregate and should call the particle.sticky() function to see if it sticks. 
 
+The final noteworthy function is the capacity_dimension (and by subsequent relation, capacity_dimension_vs_radii). Starting part way through it, we see that we are finding sizes of boxes that extend to the largest distance of our aggregate. Then, we sort through the points of our 'stuck' particles and see how many boxes contain particles for sequentially bigger boxes. Taking the log of both the number of particles and sizes, since they grow expoentitally, we can polyfit the middle data points to find our slope, and thus our capacity dimension. We do only the middle because the ends vary and negatively impact our calculation of the dimension. The ends are too sparse since its the part that of the aggregate that is growing, and the center is too dense because of the limited space. Thus, we only want that stable middle range. 
 
+```python
+
+while biggest > s:
+        sizes_of_boxes.append(s)
+        s *= 2
+
+    Ns = []
+
+    for size in sizes_of_boxes:
+        boxes = (points // size).astype(int)
+        unique_boxes = np.unique(boxes, axis=0)
+        Ns.append(len(unique_boxes))
+
+    sizes = np.array(sizes_of_boxes)
+    Ns = np.array(Ns)
+
+    log_sizes = np.log(1 / sizes)
+    log_N = np.log(Ns)
+
+    coeffs = np.polyfit(log_sizes[1:-1], log_N[1:-1], 1) # Fit the paramters
+    D = coeffs # Grab slope
+
+    return D, log_sizes, log_N
+```
+
+To a lesser degree of importance, we also have the generation_sphere and particle_from_center. These are both simpler in design. The generation_sphere generates a random location for a particle to spawn in and particle_from_center calculates the distance between a particle's location and the center. The latter is important for recalculating the aggregate's furthest particle from the center and whether a particle is outside of the kill radius. 
+
+Now we know a little more about the program, let us look at our results!
 
 ### Gifs/Images
 
