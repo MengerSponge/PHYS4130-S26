@@ -43,31 +43,29 @@ The main idea of this code is that it takes a given number of particles and crea
 Next, let us take a closer look at some of the more important functions!
 
 ### Main Body and Functions (Longest section)
--Explain the process of the steps of main.py 
--As you progress, explain the functions as they are used. Some will be quicker to explain than others, but some major functions to highlight are:
-  -subdivide
-  -find_node
-  -insert_particle
-  -stickiness
-  -random_walk (inside of particle class)
-[Include drawings showcasing what each function does (?)] An important one would be the bitwise children node and how the program determines that
+
 
 ### Gifs/Images
--Talk about using intevrals to generate gifs
--WHere all the images and gifs of different particle number and stickiness will be
-  -Planning to include at least 3 different number counts for 5 different stickiness levels
 
-### Convergence and Stability
--Answer to if it terminates
--What happens if particle diffuses away from structure (Increases runtime but I kill off these particles)
+Capacity_Dimension.py tested five different stickiness probabilities for 5000 particles each. Their animation and final growth is shown below:
+
+
+We can see that as our probability decreases, our branches get thicker and the particles tend to be condensed. We can measure the capacity dimension over radius such that we can see this relationship:
+
+
+
 
 ### Capacity Dimension and Topological Dimension
-- Answer to questions
+
+As we mentioned before, the capacity dimension represents the number of particles inside of our aggregate's maximum size. In other words, it describes the density of fractal patterns for our problem. The topological dimension is what we traditionally think of for dimension, so for a 2D space it would be equal to 2. What does the capacity dimension look like in our 2D DLA then? We must consider our stickiness probabilities again. We saw previously for high probability there were sparse, branching aggregations while small probabilities had compact, more circular structures. We can study the global capacity dimension over these probabilities such that:
+
+
 
 ## Extensions
 
 ### How does behavior change in 3D
--Program will be initially in 3D, so need to find another source to compare to
+
+The 3D program, while not too logically different, has a few changes to its behavior and generation time. Since particles are not limited to only a 2D space to move, computation time significantly increased because they can randomly walk in three different directions. Additionally, there was some minor changes to the arrays and generation sphere. The generation sphere is now an actual sphere instead of just a circle, and considers an additional randomly chosen angle. Then, of course, the arrays were increased to three dimensions. A stickiness probability of 1 with 3000 particles was generated and is shown below:
 
 ### 
 
