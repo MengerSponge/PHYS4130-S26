@@ -92,7 +92,7 @@ def sticking_2Dt(px, py, grid, stickiness, n):
             return ra.random() <= stickiness
     return False
 
-# saves a fram every 50 particles for the 2D DLA animation
+# saves a frame every 50 particles for the 2D DLA animation
 def update_2d(frame):
     global spawn, r_max
     
