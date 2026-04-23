@@ -83,8 +83,62 @@ def ChooseAngle(angle_histo, bin_edges):
     right = bin_edges[i+1]
 
     return np.random.uniform(left, right)
-```
 
+def CalcAngle(coords, Length):
+    X, Y = coords
+    X = X - (Length-1)//2
+    Y = Y - (Length-1)//2
+    return np.atan2(Y, X)
+
+```
+By updating this distribution as particles are added using the CalcAngle function, it helps maintain a unform angular spread and keeps exceessively large branches that increase the effective radius too quickly from forming. We finally have all the basic pieces to put together a single function that takes in the aggregate, adds a new point, and updates the effective radius. 
+```python
+#numpy arrays are mutable, so we can alter them in functions easily
+def AddPoint(Agg, r_eff, Sticky , Length, angle_histo, bin_edges, point_num, color_offset): 
+    r = r_eff
+
+    start_radius = r + 4
+    kill_radius = start_radius + 1
+
+    X, Y = StartPoint(start_radius, Length, angle_histo, bin_edges)
+
+    while Agg[Y, X] > 0:
+       X, Y = StartPoint(start_radius, Length, angle_histo, bin_edges)
+
+    NumNeighbors = Neighbors(Agg, [X,Y], Length)
+    while NumNeighbors == 0:
+        
+        X, Y = Walk([X, Y], Length)
+        while Agg[Y, X] > 0: #to prevent stepping onto an agg point
+            X, Y = Walk([X, Y], Length)
+
+        #checks for new neighbors
+        NumNeighbors = Neighbors(Agg, [X,Y], Length)
+        if NumNeighbors > 0:
+            s = np.max(np.random.rand(NumNeighbors))
+            if s > Sticky: #checks to see if the particle stuck
+                NumNeighbors = 0
+
+        d = np.sqrt((X - ((Length-1)//2))**2 + (Y - ((Length-1)//2))**2)
+        if  d > kill_radius:
+            X, Y =  StartPoint(start_radius, Length, angle_histo, bin_edges)
+
+
+    if d > r:
+        r = d
+    # add point
+    Agg[Y, X] = point_num + color_offset
+
+    #update histogram
+    theta = CalcAngle([X, Y], Length)
+    bin = 0
+    while theta > bin_edges[1+bin]:
+        bin += 1
+    angle_histo[bin] = angle_histo[bin] + 1
+
+    #return new radius
+    return r
+```
 
 qqq
     A) We can instead quantify their difference from objects of classical geometry by lookin at different measures of
