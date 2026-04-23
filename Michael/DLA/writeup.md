@@ -139,24 +139,97 @@ def AddPoint(Agg, r_eff, Sticky , Length, angle_histo, bin_edges, point_num, col
     #return new radius
     return r
 ```
+This function is easy to put in a loop to calculate an aggregate for as many points as we want. The most basic implementation requires just a few lines of initialization and then the loop.
+```python
+# simulation parameters
+L = 600   #number of slots on one edge of the array
+N = 5000  #number of points to add to the aggregate
+S = 1     #sticknynesss
+r_eff = 2 #inital effective radius
+color_offset = N/4 #purely visual parameter to help when coloring the plot
 
-qqq
-    A) We can instead quantify their difference from objects of classical geometry by lookin at different measures of
-       dimension such as the capacity dimension and the topological dimension.
-         1) Capacity dimension, aka box counting dimension, is determined by covering the plot in boxes and repeatedly
-            shrinking them and counting how many contain a point of the fractal.
-         2) Topological dimension is the number of independent directions you can move locally within a space.
+#Create the aggregate
+Aggregate = np.zeros((L,L)) 
+center = (L-1)//2
+Aggregate[center, center] = 10000 #seed point
 
-2) Sample code and explanation for how the DLA algorithm works. This is left non-specific for now since the algorithm is still being tweaked.
-    A) The DLA aggregate is stored as a 2D numpy array. There are three primary functions that are used to compute it.
-      1) The first function looks at an input point and checks for neighbors in the surrounding array.
-      2) The next function does a step of a random walk for a point input into the array.
-      3) The last function uses the first two. It starts a random point and walks it until it is next to a neighbor and
-         then adds it to the array.
-    B) FIrst plot showing a sample DLA plot.
+#angle histogram
+thetaMin = -np.pi
+thetaMax = np.pi
+numBins = 20
 
-## Capacity Dimension of the DLA
-1) Sample code for calculating the capacity dimension.
-    A) Plot of the capacity dimension as a function of stickiness
+bin_edges = np.linspace(thetaMin, thetaMax, 1+numBins)
+angle_histo = np.zeros(numBins, dtype=int)
 
-## Animations for N = 10^6 and other interesting plots
+for k in range(N)
+    r_eff =  AddPoint(Aggregate, r_eff, S, L, angle_histo, bin_edges, k+1, color_offset)
+```
+Before going into different plots of aggregates, it is important to look into how we quantify the way fractals fill space. Traditional notions of the dimension of a space may give a defintion that says the dimenion of an object is how many independent directions exist on it. This is referred to as topological dimension. It works fine for the objects of classical geometry like squares and circles, but it's hard to apply this to fractals. Some, like the famous Mandelbrot set, do have large continuous regions that seem two dimensional. However, not all fractals have such features, but many do have these complex and winding structures tha don't exactly fit the criterion to be one or two dimensional. 
+
+Therefore, we need a generalized concept of dimension that works for classical objects but still captures the meaningful distinctions of fractals. This is done with capacity dimension (aka, the box counting dimension). The capacity dimension is a way to measure the “size” or complexity of a set that may be too irregular to describe with standard integer dimensions. The idea is to cover the set with boxes of side length ε, and count the minimum number N(ε) needed to cover it. The capacity dimension is then defined by how this number scales as the boxes get smaller:
+
+dim= lim (ε→0) logN(ε)/log(1/ε)
+
+when the limit exists. Intuitively, it captures how quickly detail appears as you zoom in. This generalizes the traditional notion of dimension because for ordinary geometric objects the scaling recovers dimensions 1, 2, and 3 respectively, but it also assigns non-integer dimensions to more complicated sets, reflecting their intermediate scaling behavior between classical dimensions.
+
+The logarithms in this defintion play two important rolls. First, they turn a power-law relationship into something linear. For many sets, the covering number scales like N(ε)≈Cε^−d. Taking logs gives
+
+logN(ε)≈logC+dlog(1/ε),
+
+so the dimension d becomes the slope of a straight line when you plot logN(ε) versus log(1/ε). The ratio in the definition is exactly extracting that slope.
+Second, the logarithms remove multiplicative constants and make the definition scale-invariant. The constant C only contributes an additive term logC, which disappears when you take the limit, so the dimension depends only on the scaling behavior—not on arbitrary choices like units or normalization.
+
+This motivates a somewhat simple algorithm to compute the capacity dimension. 
+
+```python
+def box_counting_dimension(agg, min_box_size=1):
+
+    # Convert to binary mask
+    mask = (agg != 0) #grab where the aggregate is non-zero
+    coords = np.argwhere(mask) #get the places where it is non-zero
+    ymin, xmin = coords.min(axis=0)
+    ymax, xmax = coords.max(axis=0)
+
+    mask = mask[ymin:ymax+1, xmin:xmax+1] #trim the mask to speed up calculation
+
+    N = min(mask.shape)
+
+    # Use powers of 2 for box sizes
+    max_power = int(np.log2(N))
+    sizes = [2**k for k in range(int(np.log2(min_box_size)), max_power + 1)]
+
+    counts = [] #store the box counting
+
+    for size in sizes:
+        # Trim array so it divides evenly
+        trimmed = mask[:N - (N % size), :N - (N % size)]
+
+        # Reshape into blocks
+        new_shape = (trimmed.shape[0] // size, size,
+                     trimmed.shape[1] // size, size)
+
+        blocks = trimmed.reshape(new_shape)
+
+        # Check if any point in each block is occupied
+        occupied = blocks.max(axis=(1, 3))
+
+        # Count occupied boxes
+        count = np.sum(occupied)
+        counts.append(count)
+
+    sizes = np.array(sizes)
+    counts = np.array(counts)
+
+    # Remove zeros (log(0) is undefined)
+    valid = counts > 0
+    sizes = sizes[valid]
+    counts = counts[valid]
+
+    # Linear fit in log-log space
+    coeffs = np.polyfit(np.log(1/sizes), np.log(counts), 1)
+    D = coeffs[0]
+
+    return D, sizes, counts
+```
+With all the pieces in place we can start creating DLA fractals and computing their fractal dimension.
+
