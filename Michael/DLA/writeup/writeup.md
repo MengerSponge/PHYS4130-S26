@@ -259,7 +259,7 @@ The stickyness affectst the liklihood of a particle sticking once it reaches the
 When we generate this for many more values of the stickyness, we get a plot that looks something like this:
 
 <div align="center">
-  <img src="Capacity_VS_Sticky.png" alt=Capacity V Stciky" width="600">
+  <img src="Capacity_Vs_Sticky.png" alt=Capacity V Stciky" width="600">
   <p><em>Figure 5:</em> Effects of stickyness on the dimension for aggregates with N = 5000 points.</p>
 </div>
 
@@ -271,3 +271,5 @@ One last thing to look at is how dimension changes as the aggregate grows.
   <img src="Capacity_Dimension_Vs_Radius.png" alt=Capacity V Radius" width="600">
   <p><em>Figure 5:</em> Effects of radius on the dimension for the aggregates </p>
 </div>
+
+Presuming that this is not an artifact of a buggy implimentation, this change is less smooth than the effect stickyness. We see that the capacity dimension starts to oscillate somewhat around 1.66. 
