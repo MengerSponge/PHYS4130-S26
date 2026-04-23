@@ -109,4 +109,6 @@ def main(p, num):
     ax.set_ylim(center[1] - current_maximum, center[1] + current_maximum)
     fig.savefig(png_path)
 
-    return Diffusion_Functions.capacity_dimension(stuck_locations)
+    D, size, N = Diffusion_Functions.capacity_dimension(stuck_locations)
+
+    return D, size, N, stuck_locations, center

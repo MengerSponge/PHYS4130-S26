@@ -116,7 +116,7 @@ def capacity_dimension(stuck_locations):
     sizes_of_boxes = []
     s = 1
 
-    # Loop through s to create bigger boxes until we have a aquare grid that covers out aggregate
+    # Loop through s to create bigger boxes until we have a square grid that covers out aggregate
     while biggest > s:
         sizes_of_boxes.append(s)
         s *= 2
@@ -138,3 +138,27 @@ def capacity_dimension(stuck_locations):
     D = coeffs # Grab slope
 
     return D, log_sizes, log_N
+
+
+def capacity_dimension_vs_radius(stuck_locations, center):
+    points = np.array(stuck_locations)
+    center = np.array(center)
+
+    distances = np.linalg.norm(points - center, axis=1)
+    r_max = np.max(distances)
+
+    radii = np.logspace(np.log10(0.05*r_max), np.log10(0.8*r_max), 20)
+
+    Ds = []
+
+    for r in radii:
+        subset = points[distances <= r]
+        
+        if len(subset) < 100:  # avoid bad fits
+            Ds.append(np.nan)
+            continue
+
+        D, _, _ = capacity_dimension(subset)
+        Ds.append(D[0])  # slope
+
+    return radii, np.array(Ds)

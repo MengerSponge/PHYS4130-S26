@@ -1,4 +1,5 @@
 import Diffusion_Main
+import Diffusion_Functions
 import matplotlib.pyplot as plt
 
 data = [(1, 5000), (0.5, 5000), (0.25, 5000), (0.1, 5000), (0.01, 5000)]
@@ -6,32 +7,37 @@ D_array = []
 size_array = []
 N_array = []
 
+fig2, ax2 = plt.subplots()
+fig3, ax3 = plt.subplots()
+fig4, ax4 = plt.subplots()
+
 for point in data:
-    D, size, N = Diffusion_Main.main(*point)
+    D, size, N, stuck_locations, center = Diffusion_Main.main(*point)
     D_array.append(D)
-    size_array.append(size)
-    N_array.append(N)
+    
+    ax2.plot(size, N, label=f'{point[0]}')
+    print(D[0])
 
-fig2, ax = plt.subplots()
+    radii, Ds = Diffusion_Functions.capacity_dimension_vs_radius(stuck_locations, center)
+    ax3.plot(radii, Ds, marker='o', label=f'{point[0]}')
 
-for s, n, i in zip(size_array, N_array, range(len(data))):
-    plt.plot(s, n, label=f'{data[i][0]}')
-    plt.legend()
-    plt.title("Capacity Dimension (Log-Log)")
-    plt.xlabel("Sizes of Boxes")
-    plt.ylabel("Number of Particles")
-    print(D_array[i][0])
+ax2.set_title("Box-Counting Scaling (Log–Log)")
+ax2.set_xlabel("log(1 / box size)")
+ax2.set_ylabel("log(N)")
+ax2.legend()
 
-plt.show()
-
-fig3, ax = plt.subplots()
+ax3.set_xscale('log')
+ax3.set_title("Fractal Dimension vs Radius")
+ax3.set_xlabel("Radius (r)")
+ax3.set_ylabel("D(r)")
+ax3.legend()
 
 stickiness = [t[0] for t in data]
 slopes = [d[0] for d in D_array]
 
-plt.plot(stickiness, slopes)
-plt.title("Slope vs Stickyiness")
-plt.xlabel("Stickiness (Percentage)")
-plt.ylabel("Slope (log-log)")
+ax4.plot(stickiness, slopes)
+ax4.set_title("Fractal Dimension vs Stickiness")
+ax4.set_xlabel("Stickiness (Percentage)")
+ax4.set_ylabel("Fractal Dimension")
 
-plt.plot()
+plt.show()
