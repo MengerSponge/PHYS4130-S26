@@ -16,7 +16,7 @@ Diffusion-limited aggregation (DLA) is the process where particles undergo a ran
 
 *Fig. 1) Left image is of a basic 2D DLA and the right is a 3D DLA.*
 
-It is important to note that DLA programs are not limited to the circular and spherical shapes above. They can adhere to straight lines, create brownian trees, and have many other shapes:
+It is important to note that DLA programs are not limited to the circular and spherical shapes above. They can adhere to straight lines, create Brownian Trees, and have many other shapes:
 
 <img src="Gifs_and_Images/Lungs_FLA.png" width="400"> <img src="Gifs_and_Images/Rec8_3kc2p.jpg" width="600">
 
