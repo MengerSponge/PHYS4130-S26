@@ -33,3 +33,5 @@ plt.plot(stickiness, slopes)
 plt.title("Slope vs Stickyiness")
 plt.xlabel("Stickiness (Percentage)")
 plt.ylabel("Slope (log-log)")
+
+plt.plot()
