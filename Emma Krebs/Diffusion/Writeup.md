@@ -26,9 +26,9 @@ https://arxiv.org/html/2504.13400#:~:text=Initially%20proposed%20by%20Witten%20a
 
 DLAs are not solely a computational novelty either, but often appear in nature. For example, mineral deposits, fungi, lightning bolts, snowflakes, and even ants biting off wall paint all follow a form of diffusion-limited aggregation.
 
-<img src="Gifs_and_Images/Ants_Eat_Paint_YUM.jpg" width="400">
+<img src="Gifs_and_Images/Ants_Eat_Paint_YUM.jpg" width="400"> <img src="Gifs_and_Images/DLA_Cluster.jpeg" width="400">
 
-*Fig. 3) DLA pattern from ants eating paint.*
+*Fig. 3) Left image is DLA pattern from ants eating paint and right image is grown from a copper sulfate solution in an electrodeposition cell.*
 
 https://www.deconbatch.com/2019/10/the-poor-mans-dla-diffusion-limited.html
 
