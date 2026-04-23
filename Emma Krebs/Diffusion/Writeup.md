@@ -10,11 +10,28 @@ meta:
 
 ## Introduction to Diffusion
 
-- Introduce topic. Explain what diffusion is and how it works.
-- Explain random walks
-- Explain aggregation in programs like this
-- Show what a 2D image is supposed to look like
-[Include image from wiki/web]
+Diffusion-limited aggregation (DLA) is the process where particles undergo a random walk, clustering together to form aggregations in the form of fractal branches. We define a random walk as a path that consists of the succession of random steps in some arbitrary mathematical space. For example, the main program this report describes is in a 2D space, so a particle could make a single random step along the positive and negative x- and y-axes. Doing this repeatedly gives us our random walk. An example of how a 3D and 2D aggregate looks like is shown below:
+
+![Image]()
+![Image]()
+*Fig. 1) Left, right, and middle Riemann sums for y= f(x) on [1, 8] with 5 subintervals.*
+
+PUT TWO IMAGES HERE EMMA
+
+It is important to note that DLA programs are not limited to the circular and spherical shapes above. They can adhere to straight lines, create brownian trees, and have many other shapes:
+https://arxiv.org/html/2504.13400#:~:text=Initially%20proposed%20by%20Witten%20and,;%20jungblut%20;%20halsey%20;%20halsey2%20.
+
+PUT TWO MORE IMAGES
+
+DLAs are not solely a computational novelty either, but often appear in nature. For example, mineral deposits, fungi, lightning bolts, snowflakes, and even ants biting off wall paint all follow a form of diffusion-limited aggregation.
+
+https://www.deconbatch.com/2019/10/the-poor-mans-dla-diffusion-limited.html
+
+There are three main factors that affect how an aggregate forms: seed particle location, stickiness probability, and what we consider ‘neighbors’. Stickiness probability determines how likely a particle will become a part of the aggregate when encountering a ‘stuck’ particle. High probabilities mean it will most likely stick to the first particle it encounters, meaning we have thinner, elongated branches. Lower probabilities allow more time for the particle to travel deeper into the structure on its random walk, so for the same number of particles these structures tend to be condensed with little to no branches (See GIFs and Images Section for More!). This also means that low stickiness eats up computation time because of the increased iterations of the particles’ random walks. Neighbor definitions can also change our aggregate branch shapes. For a 2D space, if we only consider the vertical and horizontal neighbors around our particle, we can get more rigid, cardinal growth along our axes compared to an eight neighbor approach. This program utilizes all eight neighbors for the 2D space. Finally, a seed particle is what determines the start of our accumulation for the aggregation. It is placed at a location to become our source point for the following particles to stick to, and it doesn’t necessarily have to be directly in the center of the particles’ generation range. 
+
+https://medium.com/nerd-for-tech/neighborhood-connections-and-connected-components-cedf922dd383 (source)
+
+Now that we know what a DLA is and how different factors can affect them, let us create our own!
 
 ## Summary of Code
 
