@@ -197,19 +197,19 @@ As we mentioned before, the capacity dimension represents the number of particle
 
 <img src="Gifs_and_Images/RadiiDimension.png" width="400">
 
-*Fig. 7) Fractal Dimension vs Radii*
+*Fig. 8) Fractal Dimension vs Radii*
 
 While this is a little jittery, which I suspect is due to my 5000 particle count, we do see a stabilization on the right side of the graph with clear distinction between our probabilities. For decreasing stickiness probability we see an increasing capacity dimension vs radii. We can also study this on a global scale where instead of radii we look at the entire aggregation:
 
-<img src="Gifs_and_Images/GlobalDimension.png" width="400">
+<img src="Gifs_and_Images/GlobalDimensional.png" width="400">
 
-*Fig. 8) Fractal Dimension vs Increasing Box Sizes*
+*Fig. 9) Fractal Dimension vs Increasing Box Sizes*
 
 Where the slopes of these linear lines are our capacity dimension. Again, we see for decreasing probability an increase in our dimension value. Both of these graphs end up approximating to roughly 1.75 at p = 0.01 (which is consistent with sources online saying it should be roughly 1.70). Therefore, capacity dimensions are less than topological dimensions for 2D. We can see this relationship in one final graph of fractal dimension vs stickiness probability. 
 
 <img src="Gifs_and_Images/StickyDimension.png" width="400">
 
-*Fig. 9) Fractal Dimension vs Stickiness*
+*Fig. 10) Fractal Dimension vs Stickiness*
 
 ## Extensions
 
