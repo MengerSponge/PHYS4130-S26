@@ -21,7 +21,9 @@ The main system we studied with these methods of integration was harmonic oscill
 
 Harmonic oscillators are characterized by two main categories, damped and undamped oscillators. These change what their phase plot diagrams look like, which are their space vs momentum graphs. For undamped systems, they are circular or elliptical shaped paths depending on the angular frequency of the system. An angular frequency of one results in a circular shape. An angular frequency less than one stretches the circle in the positon axis' direction and above one stretches it into the momentum axis' direction. An example of what these graphs look like are demonstrated below for the three integrators we will be investigating:
 
-[ADD IMAGEs HERE]
+<img src="Images_ODE/PhaseSpaceSymp.png" width="325"> <img src="Images_ODE/PhaseSpaceOdeint.png" width="325"> <img src="Images_ODE/PhaseSpaceRK45.png" width="325">
+
+*Fig 1. This figure demonstrates three phase space graphs. From left to right, we have the Symplectic, Odeint, and RK45 integration methods.*
 
 Although these all maintain similar shapes, if you look closely some appear to have thicker lines. These are from an accumulation of errors due to the method of integration. Let us see what makes these integrations unique and what these errors look like!
 
@@ -33,24 +35,88 @@ Although these all maintain similar shapes, if you look closely some appear to h
 - Explain why this makes sense.
 - Talk about linear dampending (spiral!)
 
+''' python
+
+    def Verlet_symplectic(x_0, p_0, tmax, w, damp, N):
+
+        t_array = np.linspace(0, tmax, N)
+        x_array = np.zeros(len(t_array))
+        p_array = np.zeros(len(t_array))
+        h = t_array[1] - t_array[0]
+        x_array[0] = x_0
+        p_array[0] = p_0
+    
+        # Get the next value
+        a_0 = -w**2*x_0 - damp*p_0
+        x_array[1] = x_0 + p_0*h + 0.5*a_0*h**2
+    
+        # Iterations, update momentum first then position
+        for i in range(1, len(t_array) - 1):
+    
+            a = -w**2*x_array[i] - damp*((x_array[i] - x_array[i - 1])) / h # Acceleration
+            x_array[i+1] = 2*x_array[i] - x_array[i - 1] + a*h**2
+    
+            p_array[i] = (x_array[i+1] - x_array[i - 1]) / (2*h)
+        
+        p_array[-1] = (x_array[-1] - x_array[-2]) / h
+    
+        return x_array, p_array, t_array
+
+
+'''
+
+
 ### RK45
 
 RK45, also known as Runge–Kutta–Fehlberg method, is an adapative numerical technique for solving ODEs. It uses intermediate calculations to produce two estimates of different accuracy. By doing this, it can adjust the time step sizes for high accuracy and efficiency. These technqiues have a range of different orders you can use for a probelm. In this case, RK45 computes a 4th and 5th order error estimate while RK2 would be a lower order with only a 2nd order estimate. Although RK45 excels at accuracy, it does not maintain the geometrical properties of the phase space, so it loses total energy from small numerical errors over time.
 
 The function definition in the code is shown as:
 
+''' python
+
+    def RK45_solver(x_0, p_0, tmax, w, damp, N):
+
+        y_0 = [x_0, p_0]
+        t_array = np.linspace(0, tmax, N)
+        
+        # Force it to match other integration methods
+        
+        sol = solve_ivp(Harmonic_deriv, (0, tmax), y_0, method='RK45', t_eval=t_array, args=(w, damp)) 
+        t_array = sol.t
+        x_array = sol.y[0]
+        p_array = sol.y[1]
+    
+        return x_array, p_array, t_array
+
+'''
 
 
-- Explain what the RK45 function is, what it does good at, and how it compares to the work we previously did with RK2.
+
 - Include image showing the process the function goes through with midpoints. Include equation of calculation it does.
 - Explain the snippet of code for Rk45 and how you set it up, what it does with its arguments, etc.
-- Talk about linear dampending 
 
 ### Odeint
 - Explain what the Odent function is and what it does better than the other 
 - Include image showing the process the function goes through with midpoints. Include equation of calculation it does.
 - Explain the snippet of code for Odeint and how you set it up, what it does with its arguments, etc.
-- Talk about linear dampending 
+- Talk about linear dampending
+
+''' python
+
+    def Odeint_solver(x_0, p_0, tmax, w, damp, N):
+
+        y_0 = [x_0, p_0]
+    
+        t = np.linspace(0, tmax, N)
+        L = odeint(Harmonic_deriv, y_0, t, args=(w, damp), tfirst=True, rtol=1e-4)
+        
+        return L[:,0], L[:,1], t
+
+'''
+
+### Summary of Code
+
+Now that we understand our three functions a little more, let us turn our attention to the main.py function. 
 
 ### Final Comparison
 - Create a graph with all three functions and compare the differences between them. Summarizing basically.
@@ -70,8 +136,45 @@ The function definition in the code is shown as:
 
 ## Timekeeping
 
-4/1: 18 hours
+4/28: 18 hours
 
 ## Sources
 
 Main Source: https://math.libretexts.org/Bookshelves/Differential_Equations/Numerically_Solving_Ordinary_Differential_Equations_(Brorson)/07%3A_Symplectic_integrators 
+
+https://www.gorillasun.de/blog/euler-and-verlet-integration-for-particle-physics/ (Verlet and Symplectic Integrator)
+
+https://en.wikipedia.org/wiki/Semi-implicit_Euler_method (Semi-implicit Euler wiki)
+
+https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html (Modeled equation based of of def lotkavolterra from this section. I needed to pass t and return it as a  tuple for it to work.
+
+ChatGPT (My Visual Studio stopped working at the beginning of the project and wouldn’t compile the python code or run it. I fed ChatGPT the error message and I eventually found a work around.) 
+
+Prompt:
+
+PS C:\Users\wolf1\OneDrive\Documents\GitHub\PHYS4130-S26> & C:/Users/wolf1/AppData/Local/Programs/Python/Python39/python.exe
+Python 3.9.13 (tags/v3.9.13:6de2ca5, May 17 2022, 16:36:42) [MSC v.1929 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+Ctrl click to launch VS Code Native REPL
+>>> plt.plot()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'plt' is not defined
+>>> plt.plot()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'plt' is not defined
+>>> v_array.append(start_v)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'v_array' is not defined
+>>> import matplotlib.pyplot as plt
+>>> 
+
+https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.RK45.html (For RK45 solver’s notation)
+
+https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.odeint.html (For Odient)
+
+https://stackoverflow.com/questions/18648626/for-loop-with-two-variables (For loop zip)
+
+https://en.wikipedia.org/wiki/Harmonic_oscillator (Harmonic Oscillator)
