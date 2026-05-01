@@ -78,19 +78,18 @@ U0[120:130, N//2 - 5:N//2 ] = 20
 
 V0 = np.zeros((N, N))
 ```
-Then, to start time stepping we will need easy ways to compute various derivatives of these functions. The basic ones are the first order partial derivatives and the laplacian. Something that has not been addressed yet is the question of boundary conditions. For the time being, the program will be built presuming periodic boundary conditions (so inidicies loop back over to 0 when computing coupled terms), but the functionality will be implemeneted later on. Since we are using periodic BCs, we can use numpy's roll function to move around in our arrays for computing the coupled derivatives. For the simulations we will be testing with this method, we only need the laplacian, but others can be implemented with some thought. We will use a nine point laplacian stencil for its higher error order (4th order) and its resistance to anisotropic effects. 
-
+Then, to start time stepping we will need easy ways to compute various derivatives of these functions. The basic ones are the first order partial derivatives and the laplacian. Something that has not been addressed yet is the question of boundary conditions. For the time being, the program will be built presuming periodic boundary conditions (so inidicies loop back over to 0 when computing coupled terms), but the functionality will be implemeneted later on. Since we are using periodic BCs, we can use numpy's roll function to move around in our arrays for computing the coupled derivatives. For the simulations we will be testing with this method, we only need the laplacian, but others can be implemented with some thought. We will use a nine point laplacian stencil for its 4th order error and its resistance to anisotropic effects. 
 ``` math
 \begin{gathered}
-\begin{pmatrix} 0.25 & 0.5 & 0.5 \\ 0.5 & -3 & 0.5  \\ 0.25 & 0.5 & 0.5\end{pmatrix}
+\begin{pmatrix} 1/6 & 4/6 & 1/6 \\ 4/6 & -20/6 & 4/6  \\ 1/6 & 4/6 & 1/6\end{pmatrix}
 \end{gathered}
 ```
-Where the elements of this matrix represent the weights of the adjacent values in the sum to approximate the laplacian
+Where the elements of this matrix represent the weights of the adjacent values in the sum to approximate the laplacian. This python implementation with the roll function takes in an array and computes the laplacian at all points.
 ```python
-def Laplacian_9pt_2(U, h): #different stencil
+def Laplacian_9pt(U, h): #my old one (this) is faster
 
     return (
-        2*(np.roll(U, 1, 0) + np.roll(U, -1, 0) + np.roll(U, 1, 1) + np.roll(U, -1, 1))
+        4*(np.roll(U, 1, 0) + np.roll(U, -1, 0) + np.roll(U, 1, 1) + np.roll(U, -1, 1))
         +
         (
             np.roll(np.roll(U, 1, 0), 1, 1)+
@@ -98,8 +97,8 @@ def Laplacian_9pt_2(U, h): #different stencil
             np.roll(np.roll(U, -1, 0), 1, 1)+
             np.roll(np.roll(U, -1, 0), -1, 1)
         )
-        - 3*U
-    )/(2* h**2)
+        - 20*U
+    )/(6 * h**2)
 ```
 
 
