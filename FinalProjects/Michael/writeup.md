@@ -108,6 +108,23 @@ def F(t, U, V): #sample derivatives for the wave equation
 
     return [dU_dt, dV_dt]
 ```
+Now, all the structure is in place to compute things for this system. The only thing that remains is to find a way to package our system in a way the SciPy integrators can interpret. Currently, our system is represented as two N*N arrays whereas solve_ivp() needs the system to be a one dimensional array. With that in mind, we need to convert our data into that form. We will also need to compute the derivatives in this new representations accordingly. We will achieve this by flattening and concatenating our two arrays. 
+```python
+# Package the full system as one long array of all of our coupled solutions
+Y0 = np.concatenate([U0.flatten(), V0.flatten()]) 
+
+def rhs(t, Y): #this computes the derivitives for the single list representation
+
+    #First, extract U and V in there 2D array forms
+    U = Y[:N*N].reshape((N, N)) #slice up to N*N - 1
+    V = Y[N*N:].reshape((N, N)) #slice ater N*N
+    
+    # compute derivatives...
+    dU_dt, dV_dt = F(t, U, V)
+
+    #package our derivative to be in the same form factor as packaged system.
+    return np.concatenate([dU_dt.flatten(), dV_dt.flatten()])
+```
 
 
 
