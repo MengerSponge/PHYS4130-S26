@@ -43,7 +43,7 @@ Thus, we can put this result into the heat equation and obtain an equation for t
 ```
 We are now done. Instead of a single function of two variables, we now have a system of functions in one vartiable that are all related through a coupled ODE system. At this point, we then churn this system of ODEs through a known integrator. Each discretized function serves as our approximation of the function around that point in space. This method is modular in the sense that you select the order of your spatial error by choosing the order of your derivative stencil. 
 
-This proces naturally generalizes to higher dimensions. Instead of a single index, we now have two or more (one for each spatial coordinate), and we have to approximate spatial derivatives in the correct direction. This method can also work for problems that are second order in time granted that you turn the problem into a system of PDEs that are first order in time, which will be shown below. Consider a PDE such as
+This proces naturally generalizes to higher dimensions. Instead of a single index, we now have two or more (one for each spatial coordinate), and we have to approximate spatial derivatives in the correct direction. This method can also work for problems that are second order in time granted that you turn the problem into a system of PDEs that are first order in time, which will be shown below. Consider a PDE such as 
 ```math
 \begin{gathered}
 \partial_t^2 \, = F(u,x,t). \\
