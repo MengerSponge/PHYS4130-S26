@@ -2,7 +2,7 @@
 dummy intro
 There are PDEs that must be solved. But, they don't want to be solved. However, mathematicians are clever. THey found a way to solve problems that don't want to be solved!
 
-## The Method of Lines: Theory
+### Theory
 The first method we will investigate is known as the method of lines. It builds off of already devloped ODE  integrators as well as the numeric differentiation stencils that we studied in previous projcets. Because of this, the problem must be written in a form such that it is first order in time, and that time derivative should be isolated from the other terms of the PDE. The goal is to turn the PDE into a system of coupled ODEs in all but one coordinate. 
 
 The process is best demonstrated by first looking at an example. We will consider the heat equation in one dimension. 
@@ -58,7 +58,10 @@ We can transform this into a first ordey system through the following
 ```
 Of course, now you have to solve for the other function over time as well by allowing a coupling of the two through derivatives. This also allows you to consider systems of PDEs that are first order in time. 
 
-## The Method of Lines: Implementation
+
+
+## The Method of Lines
+### Implementation
 The first thing to decide is how the solutions will be stored. Numpy arrays are a natural choice. They allow the indexing elements in the same way as the construction of our method. Furhtermore, this allows acces to the vectorization of numpy arrays, which will allows us to easily compute changes in our solution when time stepping. 
 
 Then, some choices need to be made about the scope of the program. Since the 2D versions of famous equations such as the heat or wave equation have more visually intersting solutions than their one dimensional counterparts, and because we would like to be able to at least solve the wave equation, a reasonable level of generality to aim for is a program that can numerically solve a coupled system of two PDEs in two spatial dimensions that are first order in time. That is not a trivial task,and so we proceed carefully by first discretizing and initializaing our two solutions: U and V.
