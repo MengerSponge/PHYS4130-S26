@@ -61,7 +61,28 @@ Of course, now you have to solve for the other function over time as well by all
 ## The Method of Lines: Implementation
 The first thing to decide is how the solutions will be stored. Numpy arrays are a natural choice. They allow the indexing elements in the same way as the construction of our method. Furhtermore, this allows acces to the vectorization of numpy arrays, which will allows us to easily compute changes in our solution when time stepping. 
 
-Then, some choices need to be made about the scope of the program. Since the 2D versions of famous equations such as the heat or wave equation have more visually intersting solutions thant their one dimensional counterparts, and because we would like to be able to solve the wave equation, a reasonable level of generality to aim for is a program that can numerically solve a coupled system of two PDEs in two spatial dimensions that are first order in time. Now, we proceed carefully. 
+Then, some choices need to be made about the scope of the program. Since the 2D versions of famous equations such as the heat or wave equation have more visually intersting solutions than their one dimensional counterparts, and because we would like to be able to at least solve the wave equation, a reasonable level of generality to aim for is a program that can numerically solve a coupled system of two PDEs in two spatial dimensions that are first order in time. That is not a trivial task,and so we proceed carefully by first discretizing and initializaing our two solutions: U and V.
+```python
+
+N = 151 # Num points on a postion side
+h = 0.5 # spatial step size
+
+T_final = 500
+Nt = 800
+
+dt = T_final/Nt #time step
+
+# Sample Initial conditions
+U0 = np.zeros((N, N))
+U0[120:130, N//2 - 5:N//2 ] = 20
+
+V0 = np.zeros((N, N))
+```
+Then, to start time stepping we will need easy ways to compute various derivatives of these functions. The basic ones are the first order partial derivatives and the laplacian. Something that has not been addressed yet is the question of boundary conditions. For the time being, the program will be built presuming periodic boundary conditions (so inidicies loop back over to 0 when computing coupled terms), but the functionality will be implemeneted later on. Since we are using periodic BCs, we can use numpy's roll function to move around in our arrays for computing the coupled derivatives. For the simulations we will be testing with this method, we only need the laplacian, but others can be implemented with some thought. We will use a nine point laplacian stencil for its higher error order (4th order)
+
+(put a diagram of the stencil here)
+```python
+```
 
 
 
