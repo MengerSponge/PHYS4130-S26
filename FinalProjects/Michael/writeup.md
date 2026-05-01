@@ -59,6 +59,13 @@ We can transform this into a first ordey system through the following
 Of course, now you have to solve for the other function over time as well by allowing a coupling of the two through derivatives. This also allows you to consider systems of PDEs that are first order in time. 
 
 ## The Method of Lines: Implementation
+The first thing to decide is how the solutions will be stored. Numpy arrays are a natural choice. They allow the indexing elements in the same way as the construction of our method. Furhtermore, this allows acces to the vectorization of numpy arrays, which will allows us to easily compute changes in our solution when time stepping. 
+
+Then, some choices need to be made about the scope of the program. Since the 2D versions of famous equations such as the heat or wave equation have more visually intersting solutions thant their one dimensional counterparts, we will configure the program to solve problems in two spatial dimensions over time. Furthermore, since we would like to be able to 
+
+
+
+
 
 
 
