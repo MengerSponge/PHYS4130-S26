@@ -130,3 +130,50 @@ def generate_polygon_magnets(N, R=1.0):
         for k in range(N)
     ]
     return magnets
+
+'''
+Function name: plot_random_trajectories
+What it does: Randomly generates initial speed and velocity in the x and y directions. 
+              Uses the integration function to plot how the motion performs under the random initial conditions for N magnets. 
+'''
+def plot_random_trajectories(magnets, title):
+
+    initial_conditions, solutions = [], []
+
+    # generate random initial conditions
+    for _ in range(3):
+        x0 = ra.uniform(-1.5, 1.5)
+        y0 = ra.uniform(-1.5, 1.5)
+        vx0 = ra.uniform(-0.1, 0.1)
+        vy0 = ra.uniform(-0.1, 0.1)
+        initial_conditions.append([x0, y0, vx0, vy0])
+
+    # solve trajectories
+    for ic in initial_conditions:
+        solutions.append(rk45(ic, magnets))
+
+    # plot
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+
+    for i, sol in enumerate(solutions):
+        ax = axes[i]
+        x = sol.y[0]
+        y = sol.y[1]
+
+        ax.plot(x, y, lw=0.7)
+
+        for m in magnets:
+            ax.scatter(m[0], m[1], color='red', s=50, zorder=3)
+
+        ic = initial_conditions[i]
+        ax.set_title(
+            f"x0={ic[0]:.2f}, y0={ic[1]:.2f}\n"
+            f"vx0={ic[2]:.2f}, vy0={ic[3]:.2f}"
+        )
+
+        ax.set_aspect('equal')
+        ax.grid(alpha=0.3)
+        ax.set_xlim(-1.5, 1.5)
+        ax.set_ylim(-1.5, 1.5)
+
+    plt.suptitle(title)
