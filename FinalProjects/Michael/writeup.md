@@ -232,15 +232,38 @@ Let's briefly turn our attention from the KSE and instead look at the broader cl
 \text{where L is a linear operator and N(u,t) is the nonlinear term} \,
 \end{gathered}
 ```
-subjected to periodic boundary conditions. let h be a timestep. We now introduce an integrating factor
+subjected to periodic boundary conditions. We now introduce an integrating factor
 ```math
-w(x,y,t) = e^{-Lh} \,u.
+w = e^{-Lt} \,u.
 ```
-Recall that the matrix exponential is itself an operator. This allows us to derive an exact time step formula.
+Recall that the matrix exponential is itself an operator. We seek to find an update formula for w that then can be turned into an update formula for u. Differentiating w yields
 ```math
-u(x,y, t+h) = e^{Lh}u(x,y,t) + e^{Lh} \int_{0}^{h} e^{-L\tau} N(u(x,y,t+\tau)d\tau.
+\begin{align*}
+\partial_t \, w &= \partial_t(\, e^{-Lt} \,u.) \\
+                &= \partial_t(\, e^{-Lt})  \, u + e^{-Lt} \, \partial_t(\,u) \\
+                &= -L\, e^{-Lt} \, u + e^{-Lt} \, (Lu + N(u,t)) \\
+                &=  e^{-Lt} \, N(u,t).
+\end{align*}
 ```
-We expand our solution as a fourier series
+Then, we let h be a time step. Our exact change in w as we go from t to t+h comes by integrating.
+```math
+\begin{align*}
+w(t+h) - w(t) &= \int_{t}^{t+h} \partial_t w dt \\
+              &= \int_{t}^{t+h} e^{-Lt} \, N(u,t) dt \\
+              &= \int_{0}^{h} e^{-L\,(t+\tau)} \, N(u(t+\tau),t+\tau) d\tau \\
+\end{align*}
+```
+Where in that last step we have made a change of varaibles. Now, we substitute in our definition of u.
+```math
+\begin{align*}
+e^{-L\,(t+h)} \,u - e^{-Lt} \,u = \int_{0}^{h} e^{-L\,(t+\tau)} \, N(u(t+\tau),t+\tau) d\tau \\
+\end{align*}
+```
+By shuffling around terms and canceling out repeating factors, we obtain an exact formula for the change in u over a time step of size h.
+```math
+u(x,y, t+h) = e^{Lh}\,u(x,y,t) + e^{Lh}\, \int_{0}^{h} e^{-L\tau}\, N(u(x,y,t+\tau,t+\tau)\,d\tau.
+```
+Up until this point, we have not done anything different from the construction of other exponential time differencing methods. The distinction comes in how you approximate the integral. Hence the name, ETDRK4, we will use a RK4-like quadrature to approximate it. 
 ```math
 u(x,y,t) = \sum_{k_x , k_y} A_{k_x, k_y}(t) e^{i(k_x  x + k_y  y)},
 ```
