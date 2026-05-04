@@ -265,24 +265,40 @@ u(x,y, t+h) = e^{Lh}\,u(x,y,t) + e^{Lh}\, \int_{0}^{h} e^{-L\tau}\, N(u(x,y,t+\t
 ```
 By creating some discretization variables, we can rewrite this as an update formula.
 ```math
-\begin{aligned}
-\raggedright \\
-\text{Let} \, h ,\ \text{be a time step} \\
-\text{Let} \, t_n \, = n\,h \\
-\text{Let} \, u_{n+1} = e^{L\,h}\,u_n + e^{L\,h}\, \int_{0}^{h} e^{-L\tau}\, N(u(x,y,t+\tau,t+\tau)\,d\tau.
-\end{aligned}
+\begin{align*}
+&\text{Let} \, h ,\ \text{be a time step} \\
+&\text{Let} \, t_n \, = n\,h \\
+&\text{Let} \, u_{n+1} = e^{L\,h}\,u_n + e^{L\,h}\, \int_{0}^{h} e^{-L\tau}\, N(u(x,y,t+\tau,t+\tau)\,d\tau.
+\end{align*}
 ```
 Up until this point, we have not done anything different from the construction of other exponential time differencing methods. The distinction comes in how you approximate the integral. Hence the name, ETDRK4 uses an RK4-like quadrature to approximate it in terms of our discretization variables. Their derivation is not presented here, but can be found in original paper detailing this method "Exponential Time Differencing for Stiff Systems" by Cox and Matthews. Our quadtrature coefficients are computed with the following formulas.
 ```math
-\begin{aligned}
-f_1 ​= (L\,h)^{−2} \, (− 4 − L\,h + e^{L\,h}\,(4−3\,L\,h+(L\,h)^2)) \\
-f_2 = (L\,h)^{−2} \, (2 + L\,h + e^{L\,h}\,(−2+ L\,h)) \\
-f_3 ​= (L\,h)^{−2}(− 4 − 3\,L\,h − (L\,h)^2 + e^(L\,h)\,(4 − L\,h)) \\
+\begin{align*}
+&f_1 ​= (L\,h)^{−2} \, (− 4 − L\,h + e^{L\,h}\,(4−3\,L\,h+(L\,h)^2)) \\
+&f_2 = (L\,h)^{−2} \, (2 + L\,h + e^{L\,h}\,(−2+ L\,h)) \\
+&f_3 ​= (L\,h)^{−2}(− 4 − 3\,L\,h − (L\,h)^2 + e^{L\,h}\,(4 − L\,h)) \\ \\
 
-\end{aligned}
+&a = e^{L\,h/2}\,u_n + L^{-1} \,(e^{L\,h/2} - I)\,N(u_n) \\
+&b = e^{L\,h/2}\,u_n + L^{-1} \,(e^{L\,h/2} - I)\,N(a) \\
+&c =  e^{L\,h/2}\,a  +  L^{-1} \,(e^{L\,h/2} - I)\,(2\,N(b) - N(u_n)) \\ \\
+\end{align*}
 ```
+We combine all of this to get our final update formula. 
+```math
+\begin{align*}
+&u_{n+1} = e^{L\,h}\,u_n + h\,(N(u_n)\,f_1 + 2\,(N(a) + N(b)) \, f_2 + N(c) \, f_3) \\
+\end{align*}
+```
+At this point, the theory for this method has technically been fully developed. You can, hypothetically, go and compute all the update terms by expanding these transcendental functions with opertator arguments. This is, of course, silly to do in practice. One goal for deriving a numerical method is to have it be computationally efficient. Therefore, we develop a little more theory that helps in computing these coefficients. We proceed by writing our function as a projection over 2D plane waves. (we may do this because plan waves satisfy periodic BCs)
+
 ```math
 u(x,y,t) = \sum_{k_x , k_y} A_{k_x, k_y}(t) e^{i(k_x  x + k_y  y)},
+```
+Then, because L is a linear differential operator, it immediatley follows that L is diagonal in this fourier space representation of L. This is becuase the plane waves are the eigenstates of differentiation. For example, consider the partial derivative with repect to x. 
+```math
+\begin{aligned}
+
+\end{aligned}
 ```
 Let 
 ```math
