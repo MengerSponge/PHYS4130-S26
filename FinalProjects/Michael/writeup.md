@@ -223,7 +223,7 @@ The last PDE we will examine is the 2D Kuramoto-Sivashinsky Equation (KSE). It's
 
 ```math
 \begin{gathered}
-\partial_t \, u = \nabla^2 u + \nabla^4 u + |\nabla u|^2 \\
+\partial_t \, u = - \nabla^2 u -  \nabla^4 u - |\nabla u|^2 \\
 \text{where } \, \nabla^4 = \partial_x^4 + 2\, \partial_x^2 \, \partial_y^2 + \partial_y^4  \, \text{ is the bilaplacian}
 \end{gathered}
 ```
@@ -340,8 +340,8 @@ In practice, this may leave small imaginary terms in our computation. We will ta
 Since we were interested in the KSE, we will implement our program with that problem in mind. We can indentify our L and N terms for ETDRK4 as 
 ```math
 \begin{aligned}
-L\, = \,  \nabla^2 u + \nabla^4 u \\
-N(u) = + |\nabla u|^2 \\
+L\, = \, - \nabla^2 u - \nabla^4 u \\
+N(u) = - |\nabla u|^2 \\
 \end{aligned}
 ```
 Furthermore, it is easy to show that 
