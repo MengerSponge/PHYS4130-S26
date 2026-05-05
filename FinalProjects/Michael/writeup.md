@@ -515,7 +515,7 @@ https://github.com/user-attachments/assets/c0f20e9d-e0f4-4025-aab6-243ab9ce39be
 
 https://github.com/user-attachments/assets/552360a9-2d23-4142-abf9-c47f59d31d41
 
-We see that, for a chaotic system, this method preserves the symmetry for quite a long time! Of coourse, because error is unavoidable, eventually the symmetry breaks down and the system returns to asymmetric chaos. 
+We see that, for a chaotic system, this method preserves the symmetry for quite a long time! Of course, because error is unavoidable, eventually the symmetry breaks down and the system devolves into asymmetric chaos. 
 
 ## Conclusion 
 Two numerical methods for solving PDEs have been demonstrated and applied to some example problems. The first one, the Method of Lines, use numeric differentiation stencils to approximate the PDE as a coupled system of ODEs that can then be solved numerically using any known integrator. This method was implemented using python and shown to work for two simple PDEs in the heat and wave equation. Then, the derivation was outlined for Exponential Time Difference RK4. It was implemented and tested with the Kuramoto Sivashinksy Equation, demonstrating the effectiveness of this method for high-order and stiff problems. 
