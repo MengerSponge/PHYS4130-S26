@@ -1,11 +1,13 @@
 ## Numerical Methods for Time-Dependent PDEs
-Like ODEs, PDEs are widely found in physics problems 
+Partial differential equations (PDEs) arise naturally in modeling physical systems such as diffusion, wave propagation, and countless outher phenomena. While you can sometimes find analytical solutions, most realistic problems have nonlinear terms or complex boundary conditions that prevent frinding a closed form. As a result, numerical methods are essential for approximating solutions and studying the behavior of these systems.
+
+In this work, we examine two approaches for solving time-dependent PDEs. The Method of Lines converts the PDE into a system of ordinary differential equations by discretizing space, allowing the use of standard ODE integrators. We then introduce Exponential Time Differencing RK4 (ETDRK4), a more advanced method designed to handle stiff and higher-order problems efficiently. Together, these methods provide a foundation for numerically exploring a wide range of PDEs.
 
 ## The Method of Lines
 ### Theory
-The first method we will investigate is known as the method of lines. It builds off of already devloped ODE  integrators as well as the numeric differentiation stencils that we studied in previous projcets. Because of this, the problem must be written in a form such that it is first order in time, and that time derivative should be isolated from the other terms of the PDE. The goal is to turn the PDE into a system of coupled ODEs in all but one coordinate. 
+The first method we will investigate is known as the Method of Line. It combines the previously studied numeric differentiation stencils with ODE algorithms. Because of this, the problem must be written in a form such that it is first order in time, and that time derivative should be isolated from the other terms of the PDE. In general for thi method, you end up turning the PDE into a system of coupled ODEs in all but one coordinate. 
 
-The process is best demonstrated by first looking at an example. We will consider the heat equation in one dimension. 
+The process is best demonstrated by looking at an example. We will consider the heat equation in one dimension. 
 ```math
 \partial_t u = \partial_x^2 \, u 
 ```
@@ -16,20 +18,20 @@ The first step is to discretize our problem over our spatial coordinates.
 \text{ Thus, our domain points become} \quad D = \{0, \frac{L}{n}, \frac{2\,L}{n}, \dots , L\}
 \end{gathered}
 ```
-Then, we must discretize our solution over our points. 
+Then, we must discretize our solution over those points. 
 ```math
 \begin{gathered}
 \text{ Let } \, u_k(t) = u(x_k, t) \, \text{ where } \, x_k \in D
 \end{gathered}
 ```
-Now, we need to approximate the second derivative with a stencil using our step size 
+Now, we need to approximate the second derivative with a stencil using our spatial step size, h
 ```math
 \begin{gathered}
 h = L/n \\
 \text{around} \, x_k, \, \partial_x^2 u \approx \frac{-u(x_k+2h, t) + 16\,u(x_k + h, t) - 30\,u(x_k, t) + 16\,u(x_k-h, t) - u(x_k-2h,t)}{12\,h^2}
 \end{gathered}
 ```
-Moving left or right by a step of size h is equivalent to moving left or right by an index in our discretized solution. So, we obtain
+Moving left or right by a step of size h is equivalent to moving left or right by an index in our discretized solution set. So, we obtain
 ```math
 \begin{gathered}
 \partial_x^2 u \approx \frac{-u_{k+2}(t) + 16\,u_{k+1}(t) - 30\,u_k(t) + 16\,u_{k-1}(t) - u_{k-2}(t),t)}{12\,h^2}.
@@ -41,27 +43,27 @@ Thus, we can put this result into the heat equation and obtain an equation for t
 \frac{d}{dt}u_k(t) =  \frac{-u_k+2(t) + 16\,u_k+1(t) - 30\,u_k(t) + 16\,u_k-1(t) - u_k-2h(t),t)}{12\,h^2}.
 \end{gathered}
 ```
-We are now done. Instead of a single function of two variables, we now have a system of functions in one vartiable that are all related through a coupled ODE system. At this point, we then churn this system of ODEs through a known integrator. Each discretized function serves as our approximation of the function around that point in space. This method is modular in the sense that you select the order of your spatial error by choosing the order of your derivative stencil. 
+We are now done. Instead of a single function of two variables, we now have a system of functions in one variable that are all related through a coupled ODE system. At this point, we can churn this system of ODEs through a known integrator. Each discretized function serves as our approximation of the function around that point in space. This error for this method then comes from the order of your derivative stencil and the order of you ODE integrator.
 
-This proces naturally generalizes to higher dimensions. Instead of a single index, we now have two or more (one for each spatial coordinate), and we have to approximate spatial derivatives in the correct direction. This method can also work for problems that are second order in time granted that you turn the problem into a system of PDEs that are first order in time, which will be shown below. Consider a PDE such as 
+This proces naturally generalizes to higher dimensions. Instead of a single index, we now have two or more (one for each spatial coordinate), and we have to approximate spatial derivatives in different directions. This method can also work for problems that are second order in time granted that you turn the problem into a system of PDEs that are first order in time, which will be shown below. Consider a PDE such as 
 ```math
 \begin{gathered}
 \partial_t^2 \, = F(u,x,t). \\
 \end{gathered}
 ```
-We can transform this into a first ordey system through the following
+We can transform this into a first ordey system through the following process
 ```math
 \begin{gathered}
 \text{Let } \, v = \partial_t \, u \\
 \text{Thus }\, \partial_t \begin{pmatrix} u \\ v \end{pmatrix} = \begin{pmatrix} v \\ F(u,x,t) \end{pmatrix}
 \end{gathered}
 ```
-Of course, now you have to solve for the other function over time as well by allowing a coupling of the two through derivatives. This also allows you to consider systems of PDEs that are first order in time. 
+Of course, now you have to solve for the other function over time as well by allowing a coupling of the two solutions. This also allows you to consider systems of PDEs that are second order in time. 
 
 ### Implementation
-The first thing to decide is how the solutions will be stored. Numpy arrays are a natural choice. They allow the indexing elements in the same way as the construction of our method. Furhtermore, this allows acces to the vectorization of numpy arrays, which will allows us to easily compute changes in our solution when time stepping. 
+The first thing to decide is how the solutions will be stored. Numpy arrays are a natural choice. They allow the indexing of elements in the same way as the construction of our method. Furhtermore, this allows access to the vectorization of numpy objects, which will allows us to easily compute changes in our solution when time stepping. 
 
-Then, some choices need to be made about the scope of the program. Since the 2D versions of famous equations such as the heat or wave equation have more visually intersting solutions than their one dimensional counterparts, and because we would like to be able to at least solve the wave equation, a reasonable level of generality to aim for is a program that can numerically solve a coupled system of two PDEs in two spatial dimensions that are first order in time. That is not a trivial task,and so we proceed carefully by first discretizing and initializaing our two solutions: U and V.
+Next, some choices need to be made about the scope of the program. Since the solutions to the 2D versions of equations are more visually intersting than their one dimensional counterparts, and because we would like to be able to at least solve the wave equation, a reasonable level of generality to aim for is a program that can numerically solve a coupled system of two PDEs in two spatial dimensions that are first order in time. That is not a trivial task, and so we proceed carefully by first discretizing and initializaing our two solutions: U and V.
 ```python
 
 N = 151 # Num points on a postion side
@@ -78,7 +80,7 @@ U0[120:130, N//2 - 5:N//2 ] = 20
 
 V0 = np.zeros((N, N))
 ```
-Then, to start time stepping we will need easy ways to compute various derivatives of these functions. The basic ones are the first order partial derivatives and the laplacian. Something that has not been addressed yet is the question of boundary conditions. For the time being, the program will be built presuming periodic boundary conditions (so inidicies loop back over to 0 when computing coupled terms), but the functionality will be implemeneted later on. Since we are using periodic BCs, we can use numpy's roll function to move around in our arrays for computing the coupled derivatives. For the simulations we will be testing with this method, we only need the laplacian, but others can be implemented with some thought. We will use a nine point laplacian stencil for its 4th order error and its resistance to anisotropic effects. 
+Then, to start time stepping we will need easy ways to compute various derivatives of these functions. Something that has not been addressed yet is the question of boundary conditions. For the time being, the program will be built presuming periodic boundary conditions (so inidicies loop back over to 0 when computing coupled terms), but the functionality will be implemeneted later on. Since we are using periodic BCs, we can use numpy's roll function to move around in our arrays for computing the coupled derivatives. For the equations we will be testing with this method, we only need the laplacian, but others can be implemented with some thought. We will use a nine point laplacian stencil for its 4th order error and its resistance to anisotropic effects. 
 ``` math
 \begin{gathered}
 \begin{pmatrix} 1/6 & 4/6 & 1/6 \\ 4/6 & -20/6 & 4/6  \\ 1/6 & 4/6 & 1/6\end{pmatrix}
@@ -100,7 +102,7 @@ def Laplacian_9pt(U, h): #my old one (this) is faster
         - 20*U
     )/(6 * h**2)
 ```
-Then, another useful function would be something that computes the derivatices for the two solutions.
+Then, another useful function would be something that computes the derivatices for the two solutions. Here is an example for the wave equation.
 ```python
 def F(t, U, V): #sample derivatives for the wave equation
     dU_dt = V
@@ -108,24 +110,28 @@ def F(t, U, V): #sample derivatives for the wave equation
 
     return [dU_dt, dV_dt]
 ```
-Now, all the structure is in place to compute things for this system. The only thing that remains is to find a way to package our system in a way the SciPy integrators can interpret. Currently, our system is represented as two N*N arrays whereas solve_ivp() needs the system to be a one dimensional array. With that in mind, we need to convert our data into that form. We will also need to compute the derivatives in this new representations accordingly. We will achieve this by flattening and concatenating our two arrays. 
+Now, all the structure is in place to compute things for this system. The only thing that remains is to package our system in a way the SciPy integrators can interpret. Currently, our system is represented as two N*N arrays whereas solve_ivp() needs the system to be a one dimensional array.
+
 ```python
 # Package the full system as one long array of all of our coupled solutions
-Y0 = np.concatenate([U0.flatten(), V0.flatten()]) 
+Y0 = np.concatenate([U0.flatten(), V0.flatten()])
+```
 
+We therfore will convert our data into that form. We will also need to compute the derivatives in this new representations accordingly. We will achieve this by flattening and concatenating our two arrays. 
+```python
 def rhs(t, Y): #this computes the derivitives for the single list representation
 
-    #First, extract U and V in there 2D array forms
+    #First, extract U and V in their 2D array forms
     U = Y[:N*N].reshape((N, N)) #slice up to N*N - 1
     V = Y[N*N:].reshape((N, N)) #slice ater N*N
     
     # compute derivatives...
     dU_dt, dV_dt = F(t, U, V)
 
-    #package our derivative to be in the same form factor as packaged system.
+    #repackage our derivative to be in the same form factor as packaged system.
     return np.concatenate([dU_dt.flatten(), dV_dt.flatten()])
 ```
-Now, we can start generating solutions by passing through solve_ivp(). We have some choices for our integrator. For this, we will go with RK45.
+Now, we can start generating solutions by passing through solve_ivp(). We have some choices for our integrator. For these examples, we will go with RK45.
 ```python
 from scipy.integrate import solve_ivp
 
@@ -142,7 +148,7 @@ We can then extract our solutions and reshape them accordingly to minimc our ori
 U_list = [sol.y[:N*N,k].reshape((N,N)) for k in range(0, Nt)]
 V_list = [sol.y[N*N:,k].reshape((N,N)) for k in range(0, Nt)]
 ```
-Where Nt is the number of frames we wanted to compite. Finally, we can start creating animated simulations for some PDEs. A good starting example is the heat equation that was used when demonstrating the method. 
+Where Nt is the number of frames we wanted to compute. Finally, we can start creating animated simulations for some PDEs. A good starting example is the heat equation.
 ```math
 \begin{aligned}
 \partial_t \, u = \alpha^2 \, \nabla^2 \, u
@@ -156,13 +162,11 @@ def F(t, U, V):
     dV_dt = np.zeros_like(V)
     return [dU_dt, dV_dt]
 ```
-In 2D, with periodic BCs and ICs fixing some non-zero temperature at certain point, we get a simulation like the following. 
-
+In 2D, with periodic BCs, our simulation makes a solution that looks like this
 
 https://github.com/user-attachments/assets/fb8d1d12-e28e-41f9-8485-cb393b5ffbc6
 
-
-This looks very reasonable! The heat equation is the canoncial example of a diffusion system, which is exactly the behavior the simulation has demonstrated. The next problem we can to try is the wave equation. 
+This looks very reasonable! The heat equation is the canoncial example of a diffusion system, which is exactly the behavior the simulation has captured. The next problem we can to try is the wave equation. 
 ```math
 \begin{gathered}
 \partial_t^2 \, u = \alpha^2 \, \nabla^2 \, u
@@ -175,7 +179,7 @@ We need to do some more work to adapt this to the program. The system must be ex
 \text{Thus }\, \partial_t \begin{pmatrix} u \\ v \end{pmatrix} = \begin{pmatrix} v \\  \nabla^2 \, u  \end{pmatrix}
 \end{gathered}
 ```
-So, V in our code represents the velocity at each point of U. The system is expressed in the following way.
+So, V in our code represents the velocity at each point of U. The system is expressed as follows.
 ```python
 alpha = 2
 def F(t, U, V):
@@ -183,11 +187,11 @@ def F(t, U, V):
     dV_dt =  alpha**2 * Laplacian_9pt(U, h)
     return [dU_dt, dV_dt]
 ```
-Then, with the same conditions as before, the simulation produces the following animation. 
+Then, with the same conditions as before, we get this animation. 
 
 https://github.com/user-attachments/assets/5bda8ee5-9267-447b-8ea5-72c84b9ee01b
 
-Which definitley looks like waves propogating. One last thing we can do to improve the program is add the ability to do fixed value boundary conditions. This can be done in the rhs function that is fed into solve_ivp. The modified function is as follows.
+Which certainly looks like waves propogating. One last thing we can do to improve the program is add the ability to do fixed value boundary conditions. This can be done in the rhs function that is fed into solve_ivp. 
 ```python
 Do_BCs = True
 
@@ -211,17 +215,19 @@ def rhs(t, Y):
 
     return np.concatenate([dU_dt.flatten(), dV_dt.flatten()])
 ```
-Where "boundary" is an array of points that is non-zero where we want to fix our values. The first round of updates is to ensure the values of the functions are fixed. The last round is to ensure that the time derivatives are zero to prevent the functions from attempting to update. If that were not there then systems would slowly leak energy even if they theoreitcally shouldn't. By getting creative with how you set the boundaries, you can see how the wave equation behaves with a double slit and demonstrate that classical waves (somehow) behave as quantum particles. 
+Where "boundary" is an array of points that is non-zero where we want to fix our values. The first round of updates is to ensure the values of the functions are fixed. The last round is to ensure that the time derivatives are zero to prevent the functions from attempting to update. If that were not there, then systems would slowly leak energy even if they theoreitcally shouldn't. By getting creative with how you set the boundaries, you can see how the wave equation behaves with a double slit and demonstrate that classical waves (somehow) behave as quantum particles. 
 
 https://github.com/user-attachments/assets/3f4030f7-6b8d-415d-a6ce-1cd7f2b63f25
 
-Another interesting equation to simulate is the 2D Kuramoto-Sivashinsky Equation (KSE). It's a popular example of a simple PDE that exhibits spatiotemporal chaos. It's time evolution features the creation, intereaction, and annihiliation of small cell-like structures that bob around the simulation.
+The last PDE we will examine is the 2D Kuramoto-Sivashinsky Equation (KSE). It's a popular example of a (relatively) simple PDE that exhibits spatiotemporal chaos. It's time evolution features the creation, intereaction, and annihiliation of small cell-like structures that bob around the simulation.
+
 ```math
 \begin{gathered}
 \partial_t \, u = \nabla^2 u + \nabla^4 u + |\nabla u|^2 \\
 \text{where } \, \nabla^4 = \partial_x^4 + 2\, \partial_x^2 \, \partial_y^2 + \partial_y^4  \, \text{ is the bilaplacian}
 \end{gathered}
 ```
+
 Those 4th order derivatives and nonlinear terms are unsettling. Not to mention that it would be an ordeal to implement a function to compute the bilaplacian alone due to that mixed term. Even if we did do that, this equation is famously stiff. An algorithm as basic as the the method of lines can't possibly be good enough for this PDE with a resonable spatial or temporal discretization. Therefore, we need a sophisticated method that can handle the numerous high-order spatial derivatives in a more precise manner than this while still having robust time stepping. Thankfully, such methods do exist, and we will see how one is constructed.
 
 ## Exponential Time Difference RK4 (ETDRK4)
@@ -233,11 +239,11 @@ Let's briefly turn our attention from the KSE and instead look at the broader cl
 \text{where L is a linear operator and N(u,t) is the nonlinear term} \,
 \end{gathered}
 ```
-subjected to periodic boundary conditions. We now introduce an integrating factor
+subjected to periodic boundary conditions. To simulate this problem, we will construct an algorithm known as Exponential Time Difference RK4 (ETDRK4). It is a pseudo spectral method that is designed for handling stiff, high order problems. The derivation starts with creating an integrating factor.
 ```math
 w = e^{-Lt} \,u.
 ```
-Recall that the matrix exponential is itself an operator. We seek to find an update formula for w that then can be turned into an update formula for u. Differentiating w yields
+Recall that the operator exponential is itself an operator. We seek an update formula for u. We do so by first differentiating w.
 ```math
 \begin{align*}
 \partial_t \, w &= \partial_t(\, e^{-Lt} \,u.) \\
@@ -254,7 +260,7 @@ w(t+h) - w(t) &= \int_{t}^{t+h} \partial_t w dt \\
               &= \int_{0}^{h} e^{-L\,(t+\tau)} \, N(u(t+\tau),t+\tau) d\tau \\
 \end{align*}
 ```
-Where in that last step we have made a change of varaibles. Now, we substitute in our definition of u.
+Where in that last step we have made a change of varaibles. Now, we substitute in our definition of w.
 ```math
 \begin{align*}
 e^{-L\,(t+h)} \,u - e^{-Lt} \,u = \int_{0}^{h} e^{-L\,(t+\tau)} \, N(u(t+\tau),t+\tau) d\tau \\
@@ -272,7 +278,9 @@ By creating some discretization variables, we can rewrite this as an update form
 &\text{Let} \, u_{n+1} = e^{L\,h}\,u_n + e^{L\,h}\, \int_{0}^{h} e^{-L\tau}\, N(u(x,y,t+\tau,t+\tau)\,d\tau.
 \end{align*}
 ```
-Up until this point, we have not done anything different from the construction of other exponential time differencing methods. The distinction comes in how you approximate the integral. Hence the name, ETDRK4 uses an RK4-like quadrature to approximate it in terms of our discretization variables. Their derivation is not presented here, but can be found in original paper detailing this method "Exponential Time Differencing for Stiff Systems" by Cox and Matthews. Our quadtrature coefficients are computed with the following formulas.
+Before proceeding, we should note some that we never discetized the operator L. In fact, if there is no nonlinear term, then this method will be exact. We only need to approxmiate in the nonlinear step, which we adress next. 
+
+Up until this point we have not done anything different from the construction of other exponential time differencing methods. The distinction comes in how you approximate the integral of the nonlinear term. Hence the name, ETDRK4 uses an RK4-like quadrature to approximate it in terms of our discretization variables. Their derivation is not presented here, but can be found in original paper detailing this method "Exponential Time Differencing for Stiff Systems" by Cox and Matthews. Our quadtrature coefficients are computed with the following formulas.
 ```math
 \begin{align*}
 &f_1 ​= (L\,h)^{−2} \, (− 4 − L\,h + e^{L\,h}\,(4−3\,L\,h+(L\,h)^2)) \\
@@ -281,27 +289,31 @@ Up until this point, we have not done anything different from the construction o
 
 &a = e^{L\,h/2}\,u_n + L^{-1} \,(e^{L\,h/2} - I)\,N(u_n) \\
 &b = e^{L\,h/2}\,u_n + L^{-1} \,(e^{L\,h/2} - I)\,N(a) \\
-&c =  e^{L\,h/2}\,a  +  L^{-1} \,(e^{L\,h/2} - I)\,(2\,N(b) - N(u_n)) \\ \\
+&c = e^{L\,h/2}\,a  +  L^{-1} \,(e^{L\,h/2} - I)\,(2\,N(b) - N(u_n)) \\
 \end{align*}
 ```
-We combine all of this to get our final update formula. 
+We together for our final update formula. 
 ```math
 \begin{align*}
 &u_{n+1} = e^{L\,h}\,u_n + h\,(N(u_n)\,f_1 + 2\,(N(a) + N(b)) \, f_2 + N(c) \, f_3) \\
 \end{align*}
 ```
-At this point, the theory for this method has technically been fully developed. You can, hypothetically, go and compute all the update terms by expanding these transcendental functions with opertator arguments. This is, of course, silly to do in practice. One goal for deriving a numerical method is to have it be computationally efficient. Therefore, we develop a little more theory that helps in computing these coefficients. We proceed by writing our function as a projection over 2D plane waves. (we may do this because plan waves satisfy periodic BCs)
+At this point, the theory for this method has technically been fully developed. You can, hypothetically, go and compute all the update terms by expanding these operator exponentials. This is, of course, silly to do in practice. One goal for deriving a numerical method is to have it be computationally efficient. Therefore, we develop a little more theory that helps in computing these coefficients. We proceed by writing our function as a Fourier series over 2D plane waves. (we may do this because plane waves satisfy periodic BCs)
 
 ```math
 u(x,y,t) = \sum_{k_x , k_y} A_{k_x, k_y}(t) e^{i(k_x  x + k_y  y)},
 ```
-Then, because L is a linear differential operator, it immediatley follows that L is diagonal in this fourier space representation of L. This is becuase the plane waves are the eigenstates of differentiation. For example, consider the partial derivative with repect to x on a generic 2D plane wave. 
+
+Then, because L is a linear differential operator, it immediatley follows that L is diagonal in this fourier space representation of L. This is becuase the plane waves are the eigenstates of differentiation. As an example, consider the partial derivative with repect to x on a generic mode. 
+
 ```math
 \begin{align*}
 \partial_x \, e^{i\,(k_x \, x + k_y y)} &= i\,k_x\,e^{i\,(k_x \, x + k_y y)}
 \end{align*}
 ```
-This will become useful when we impliment the algorithm into python. Thanks to the Fast Fourier Transform (FFT) we can efficiently go from the position space to the frequeny space representations of the function. Therefore, our computations of operator exponentials reduce from matrix multiplication to just simple evaluations of the exponential at several points. Again, we demonstrate this with the partial derivative with respect to x. 
+
+This will become useful when we impliment the algorithm into python. Thanks to the Fast Fourier Transform (FFT), we can efficiently go from the position space to the frequeny space representations of the function. Therefore, our computations of operator exponentials reduce from demanding matrix multiplication to simple evaluations of the exponential at several points. Again, we demonstrate this with the partial derivative with respect to x. 
+
 ```math
 \begin{align*}
 e^{\partial_x} \, e^{i\,(k_x \, x + k_y y)}
@@ -310,19 +322,22 @@ e^{\partial_x} \, e^{i\,(k_x \, x + k_y y)}
 &= e^{i \, k_x} e^{i\,(k_x \, x + k_y y)} \\
 \end{align*}
 ```
-Therefore, any time we need to compute something involving a derivative we can simply do it in Fourier space. The very final piece of theory that needs to be built has to do with the computaion of the coefficients f1, f2, and f3 for the update formula. Those will not vary as we step through time. When we evalutate them in fourier space, we just substitute in the eigenvalues of L. However, these eigenvalues can be in regions where the formulas risk catastrophic cancellation. Therefore, they can be computationally unstable. Thankfully,a trick devleloped by Kassam and Trefethen addresses this. Recall Cauchy's Formula for integration from Complex Analysis. 
+
+Therefore, any time we need to compute something involving a derivative we can simply do it in Fourier space. The very final piece of theory that needs to be built has to do with the computaion of the coefficients f1, f2, and f3 for the update formula. Those will not vary as we step through time. When we evalutate them in fourier space, we just substitute in the eigenvalues of L as we did for differentiation. However, these eigenvalues can be in regions where the formulas risk catastrophic cancellation or divergence. Therefore, they can be computationally unstable. Thankfully,a trick devleloped by Kassam and Trefethen addresses this. Recall Cauchy's Formula for integration from Complex Analysis. 
 
 ```math
 f(a) = \frac{1}{2\pi i} \, \oint_{\gamma} \frac{f(z)}{z - a}\, dz
 ```
-We will use this to evaluate f1, f2, and f3. Since our precarious points lie near 0, we take our contour to be the circle centered around our evaluation point, a. This is far enough away in practice. Then, we can just use trapezoidal rule to approximate the integral. 
+
+We will use this to evaluate f1, f2, and f3. Since our precarious points lie near 0, we take our contour to be the unit circle centered around our evaluation point, a. Then, we can just use trapezoidal rule to approximate the integral. 
+
 ```math
 f(a) \, \approx \, \frac{2\pi}{N} \sum_{k=0}^{N-1} f\!\left(a + e^{2\pi i k / N}\right)\, i e^{2\pi i k / N}
 ```
-In practice, we will take only the real value of this since we are only interested in real-valued problems for this project. Now that all the theory is complete, we can see how this is implemented in python. Surprsingly, despite being more theoreitcally complex, the implimenttion will be considerably simpler than the method of lines. 
+In practice, this may leave small imaginary terms in our computation. We will take only the real value of this since we are only interested in real-valued problems for this. Now that all the theory is complete, we can see how this is implemented in python. Surprsingly, despite being more theoreitcally complex, the implimenttion will be considerably simpler than the method of lines. 
 
 ### Implimentation
-Since we were interested in the KSE, we will implement our program with that problem in mind. We can indentify our L and N terms for ETDRK4as 
+Since we were interested in the KSE, we will implement our program with that problem in mind. We can indentify our L and N terms for ETDRK4 as 
 ```math
 \begin{aligned}
 L\, = \,  \nabla^2 u + \nabla^4 u \\
@@ -333,7 +348,7 @@ Furthermore, it is easy to show that
 ```math
 L\,e^{i\,(k_x \, x + k_y y)} \, = \, (k_x^2 + k_y^2 - (k_x^2 + k_y^2)^2)\,e^{i\,(k_x \, x + k_y y)}
 ```
-With those two things in mind, we start putting together the program. We start by initializing our postion, frequency, and L arrays as well as initial conditions on our solution.
+With those two things in mind, we begin putting together the program. We start by initializing our postion, frequency, and L arrays as well as initial conditions on our solution.
 ```python
 # N = number of points along a spatial dimension
 N = 100
@@ -365,7 +380,9 @@ L = 0.25*(K2 - K2**2)
 # random noise IC
 u0 = 0.01*np.random.randn(len(x), len(y))
 ```
-Then, we set up code for things we can procompute.
+
+Then, we set up code for things we can precompute.
+
 ```python
 # ETDRK4 COEFFICIENTS =========================================================================================================
 t_steps = int(Tmax/h)
@@ -373,7 +390,7 @@ t_steps = int(Tmax/h)
 E = np.exp(h*L)
 E2 = np.exp(0.5*h*L)
 
-# Set up to do contour integral trick by Kasam
+# Set up to do contour integral trick
 M = 20
 r = np.exp(1j*np.pi*(np.arange(1, M+1) - 0.5)/M) #pieces of the unit circle
 z = h * (L) #arguments of the phi functions
@@ -386,7 +403,9 @@ f3 = h*np.mean(((-4-3*LR-LR**2+np.exp(LR)*(4-LR))/LR**3),axis=2).real
 
 Q  = h*np.mean(((np.exp(LR/2) - 1) / (LR)), axis=2).real
 ```
-Next, we need to set up a function that takes in our forier space representation of our function, computes the nonlinear term in positon spsace since that is harder, and then returns the fourier space representation of the nonlinear term.
+
+Next, we need to set up a function that takes in our Fourier space representation of our function, computes the nonlinear term in positon spsace since that is harder, and then returns the Fourier space representation of the nonlinear term.
+
 ```python
 def NonLinear(u_ft, t): #takes in fourier transformed u and computes the non linear part.
     #spatial derivatives
@@ -415,7 +434,7 @@ def Step(u_ft, t):
 
     return u_ft_new
 ```
-Now, we can easily create a loop to compute our solution. 
+Finally, we can easily create a loop to compute our solution. 
 ```python
 
 #our initial state in fourier space
@@ -449,11 +468,11 @@ for n in range(1,t_steps+1):
     if n%verbosity == 0: # to output progress
         print(100*n/len(range(1,t_steps+1)), " % complete")
 ````
-When we test this out with with the KSE, our animated solution looks like this
+When we test this out with with the KSE, our animated solution looks like this.
 
 https://github.com/user-attachments/assets/2c8d3b6c-598c-4257-ae0e-1bc2f842e83f
 
-We can kind of see our expected dynamics, but there is this large uniform background that divereges as time goes on. To trouble shoot this, we need to look at any terms in our solution that corresponds to a constant term in space. In the fourier series, we see that this term goes with the (0,0) mode. Then, let's compute how a constant term evolves according to the KSE. 
+We can kind of see our expected dynamics, but there is this large uniform background that divereges as time goes on. To trouble shoot this, we need to look at any terms in our solution that correspond to a constant term in space. In the fourier series, we see that this term goes with the (0,0) mode. Then, let's compute how this constant term evolves according to the KSE. 
 
 ```math
 \begin{aligned}
@@ -463,7 +482,7 @@ N(A_{(0,0)} (t) \, e^{i\,(0*x + 0*y)}) = N(A_{(0,0)} (t)) = 0 \, \text{ since N(
 \end{aligned}
 ```
 
-Since our divergence is uniform over space, it seems that the simulation has the wrong time evolution for the constant term. Then, we also observe that our solution diverges slowly over the simulation time. Therefore, we conclude that our approximation for the dynamics of the (0,0) mode is just slightly off form zero in the same direciton at each step. Thus, we accumulate these little errors over enoguh time to see diveregence. This is an occasional problem with tihs method, and it is easily fixed by enforcing the (0,0) mode to be constant in time inside our step function. 
+Since our divergence is uniform over space, it seems that the simulation has the wrong time evolution for the constant term. Then, we also observe that our solution diverges slowly over the simulation time. Therefore, we conclude that our approximation for the dynamics of the (0,0) mode is just slightly off form zero in the same direciton at each step. Thus, we accumulate these little errors over enough time to see diveregence. This is an occasional problem with tihs method, and it is easily fixed by enforcing the (0,0) mode to be constant in time inside our step function. 
 
 ```python
 def Step(u_ft, t):
@@ -487,15 +506,16 @@ def Step(u_ft, t):
 Now, with this fix implemented, our simulations are exactly creating the solutions that we expect. 
 
 
-
 https://github.com/user-attachments/assets/628cd554-8723-4b8c-90b0-6d4a254f8e1d
 
 
-And we have achieved our goal. As one last intersting thing to look at, here are two KSE simulations with highly symmetric ICS.
+At last, we have achieved our goal. As one last reward for slogging through the math, here are two KSE simulations with highly symmetric ICS.
 
 https://github.com/user-attachments/assets/c0f20e9d-e0f4-4025-aab6-243ab9ce39be
 
 https://github.com/user-attachments/assets/552360a9-2d23-4142-abf9-c47f59d31d41
+
+We see that, for a chaotic system, this method preserves the symmetry for quite a long time! Of coourse, because error is unavoidable, eventually the symmetry breaks down and the system returns to asymmetric chaos. 
 
 ## Conclusion 
 Two numerical methods for solving PDEs have been demonstrated and applied to some example problems. The first one, the Method of Lines, use numeric differentiation stencils to approximate the PDE as a coupled system of ODEs that can then be solved numerically using any known integrator. This method was implemented using python and shown to work for two simple PDEs in the heat and wave equation. Then, the derivation was outlined for Exponential Time Difference RK4. It was implemented and tested with the Kuramoto Sivashinksy Equation, demonstrating the effectiveness of this method for high-order and stiff problems. 
