@@ -212,7 +212,8 @@ def rhs(t, Y):
 ```
 Where "boundary" is an array of points that is non-zero where we want to fix our values. The first round of updates is to ensure the values of the functions are fixed. The last round is to ensure that the time derivatives are zero to prevent the functions from attempting to update. If that were not there then systems would slowly leak energy even if they theoreitcally shouldn't. By getting creative with how you set the boundaries, you can see how the wave equation behaves with a double slit and demonstrate that classical waves behave as quantum particles. 
 
-![Wave Equation](Wave_Eqn_Boundary.gif)
+https://github.com/user-attachments/assets/052bd2cc-c8ed-4892-b53b-9876e8e6ba53
+
 
 Another interesting equation to simulate is the 2D Kuramoto-Sivashinsky Equation (KSE). It's a popular example of a simple PDE that exhibits spatiotemporal chaos. It's time evolution features the creation, intereaction, and annihiliation of small cell-like structures that bob around before fading away.
 ```math
