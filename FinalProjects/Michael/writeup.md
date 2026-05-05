@@ -1,6 +1,5 @@
 ## Numerical Methods for Time-Dependent PDEs
-dummy intro
-There are PDEs that must be solved. But, they don't want to be solved. However, mathematicians are clever. THey found a way to solve problems that don't want to be solved!
+Like ODEs, PDEs are widely found in physics problems 
 
 ## The Method of Lines
 ### Theory
