@@ -9,7 +9,7 @@ The first method we will investigate is known as the Method of Line. It combines
 
 The process is best demonstrated by looking at an example. We will consider the heat equation in one dimension. 
 ```math
-\partial_t u = \partial_x^2 \, u 
+\partial_t u =\alpha^2 \partial_x^2 \, u 
 ```
 The first step is to discretize our problem over our spatial coordinates.
 ```math
