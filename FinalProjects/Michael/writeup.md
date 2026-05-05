@@ -476,3 +476,24 @@ def Step(u_ft, t):
 Now, with this fix implemented, our simulations are exactly creating the solutions that we expect. 
 
 (PUT THE SIMULATION HERE)
+
+Now, with this fix implemented, our simulations are exactly creating the solutions that we expect. 
+
+(PUT THE SIMULATION HERE)
+
+And we have achieved our goal.
+
+## Conclusion 
+Two numerical methods for solving PDEs have been demonstrated and applied to some example problems. The first one, the Method of Lines, use numeric differentiation stencils to approximate the PDE as a coupled system of ODEs that can then be solved numerically using any known integrator. This method was implemented using python and shown to work for two simple PDEs in the heat and wave equation. Then, the derivation was outlined for Exponential Time Difference RK4. It was implemented and tested with the Kuramoto Sivashinksy Equation, demonstrating the effectiveness of this method for high-order and stiff problems. 
+
+## Time Keeping
+I spent about 30 hours on the program and 15 hours on the report.
+
+## Languages, Libraries, Lessons Learned
+The only language used was python. Specific libraries were numpy, scipy.integrate ,matplotlid.pyplot, and matplotlib.animation. From numpy, arrays and the FFT function was used. scipy.integrate was used in the method of lines for solving the ODE system, and matplotlib was used for plotting and animating. The main skill I developed from this, beyond learning to numerically solve PDEs, was how to be clever when indexing. 
+
+## Attribution
+The following works, while not directly cited, were essential in putting together my own derivation outline of ETD RK4 (I already knew of the method of lines from personal projects.)
+1) "Exponential Time Differencing for Stiff Systems" by S. M. Cox and P.C. Matthews
+2) "Hydrodynamics of the Kuramoto Sivashinsky Equation in Two Dimensions" by B. M. Boghosian et al.
+3) "An Exponential Time Differencing Scheme for the Kuramoto-Sivashinksy Equation" by G. Zavalani
