@@ -10,21 +10,18 @@ Chain Reaction Diagram
 flowchart TD
     N0[Neutron] --> F1[Uranium nucleus fissions]
 
-    F1 --> E1[Energy released]
     F1 --> A1[Neutron escapes into space]
     F1 --> A2[Neutron escapes into space]
     F1 --> N1[Neutron continues chain]
 
     N1 --> F2[Next uranium nucleus fissions]
 
-    F2 --> E2[Energy released]
     F2 --> B1[Neutron escapes into space]
     F2 --> B2[Neutron escapes into space]
     F2 --> N2[Neutron continues chain]
 
     N2 --> F3[Next uranium nucleus fissions]
 
-    F3 --> E3[Energy released]
     F3 --> C1[Neutron escapes into space]
     F3 --> C2[Neutron escapes into space]
     F3 --> N3[Neutron continues chain]
