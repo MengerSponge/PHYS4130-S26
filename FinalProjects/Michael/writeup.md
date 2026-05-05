@@ -159,7 +159,9 @@ def F(t, U, V):
 ```
 In 2D, with periodic BCs and ICs fixing some non-zero temperature at certain point, we get a simulation like the following. 
 
-![Heat Equation](Heat_Eqn_Periodic.gif)
+
+https://github.com/user-attachments/assets/fb8d1d12-e28e-41f9-8485-cb393b5ffbc6
+
 
 This looks very reasonable! The heat equation is the canoncial example of a diffusion system, which is exactly the behavior the simulation has demonstrated. The next problem we can to try is the wave equation. 
 ```math
@@ -184,7 +186,7 @@ def F(t, U, V):
 ```
 Then, with the same conditions as before, the simulation produces the following animation. 
 
-![Wave Equation](Wave_Eqn_Periodic.gif)
+https://github.com/user-attachments/assets/5bda8ee5-9267-447b-8ea5-72c84b9ee01b
 
 Which definitley looks like waves propogating. One last thing we can do to improve the program is add the ability to do fixed value boundary conditions. This can be done in the rhs function that is fed into solve_ivp. The modified function is as follows.
 ```python
@@ -210,19 +212,18 @@ def rhs(t, Y):
 
     return np.concatenate([dU_dt.flatten(), dV_dt.flatten()])
 ```
-Where "boundary" is an array of points that is non-zero where we want to fix our values. The first round of updates is to ensure the values of the functions are fixed. The last round is to ensure that the time derivatives are zero to prevent the functions from attempting to update. If that were not there then systems would slowly leak energy even if they theoreitcally shouldn't. By getting creative with how you set the boundaries, you can see how the wave equation behaves with a double slit and demonstrate that classical waves behave as quantum particles. 
+Where "boundary" is an array of points that is non-zero where we want to fix our values. The first round of updates is to ensure the values of the functions are fixed. The last round is to ensure that the time derivatives are zero to prevent the functions from attempting to update. If that were not there then systems would slowly leak energy even if they theoreitcally shouldn't. By getting creative with how you set the boundaries, you can see how the wave equation behaves with a double slit and demonstrate that classical waves (somehow) behave as quantum particles. 
 
-https://github.com/user-attachments/assets/052bd2cc-c8ed-4892-b53b-9876e8e6ba53
+https://github.com/user-attachments/assets/3f4030f7-6b8d-415d-a6ce-1cd7f2b63f25
 
-
-Another interesting equation to simulate is the 2D Kuramoto-Sivashinsky Equation (KSE). It's a popular example of a simple PDE that exhibits spatiotemporal chaos. It's time evolution features the creation, intereaction, and annihiliation of small cell-like structures that bob around before fading away.
+Another interesting equation to simulate is the 2D Kuramoto-Sivashinsky Equation (KSE). It's a popular example of a simple PDE that exhibits spatiotemporal chaos. It's time evolution features the creation, intereaction, and annihiliation of small cell-like structures that bob around the simulation.
 ```math
 \begin{gathered}
 \partial_t \, u = \nabla^2 u + \nabla^4 u + |\nabla u|^2 \\
 \text{where } \, \nabla^4 = \partial_x^4 + 2\, \partial_x^2 \, \partial_y^2 + \partial_y^4  \, \text{ is the bilaplacian}
 \end{gathered}
 ```
-Those 4th order derivatives and nonlinear terms are unsettling. Not to mention that it would be an ordeal to implement a function to compute the bilaplacian alone due to that mixed term. Even if we did do that, this equation is famously stiff. An algorithm as basic as the the method of lines can't possibly be accurate enough for this PDE with a resonable spatial or temporal discretization. Therefore, we need a sophisticated method that can handle the numerous spatial derivatives in a more precise manner than this while still having robust time stepping. Thankfully, such methods do exist, and we will see how one is constructed.
+Those 4th order derivatives and nonlinear terms are unsettling. Not to mention that it would be an ordeal to implement a function to compute the bilaplacian alone due to that mixed term. Even if we did do that, this equation is famously stiff. An algorithm as basic as the the method of lines can't possibly be good enough for this PDE with a resonable spatial or temporal discretization. Therefore, we need a sophisticated method that can handle the numerous high-order spatial derivatives in a more precise manner than this while still having robust time stepping. Thankfully, such methods do exist, and we will see how one is constructed.
 
 ## Exponential Time Difference RK4 (ETDRK4)
 ### Theory
@@ -451,7 +452,7 @@ for n in range(1,t_steps+1):
 ````
 When we test this out with with the KSE, our animated solution looks like this
 
-![Diverging KSE Simulation](ETDRK4_Diverging_Solution.gif)
+https://github.com/user-attachments/assets/2c8d3b6c-598c-4257-ae0e-1bc2f842e83f
 
 We can kind of see our expected dynamics, but there is this large uniform background that divereges as time goes on. To trouble shoot this, we need to look at any terms in our solution that corresponds to a constant term in space. In the fourier series, we see that this term goes with the (0,0) mode. Then, let's compute how a constant term evolves according to the KSE. 
 
@@ -486,14 +487,16 @@ def Step(u_ft, t):
 ```
 Now, with this fix implemented, our simulations are exactly creating the solutions that we expect. 
 
-(PUT THE SIMULATION HERE)
 
 
-https://github.com/user-attachments/assets/d13502b3-247e-4ec4-9d38-f12396ef2999
+https://github.com/user-attachments/assets/628cd554-8723-4b8c-90b0-6d4a254f8e1d
 
 
+And we have achieved our goal. As one last intersting thing to look at, here are two KSE simulations with highly symmetric ICS.
 
-And we have achieved our goal.
+https://github.com/user-attachments/assets/c0f20e9d-e0f4-4025-aab6-243ab9ce39be
+
+https://github.com/user-attachments/assets/552360a9-2d23-4142-abf9-c47f59d31d41
 
 ## Conclusion 
 Two numerical methods for solving PDEs have been demonstrated and applied to some example problems. The first one, the Method of Lines, use numeric differentiation stencils to approximate the PDE as a coupled system of ODEs that can then be solved numerically using any known integrator. This method was implemented using python and shown to work for two simple PDEs in the heat and wave equation. Then, the derivation was outlined for Exponential Time Difference RK4. It was implemented and tested with the Kuramoto Sivashinksy Equation, demonstrating the effectiveness of this method for high-order and stiff problems. 
