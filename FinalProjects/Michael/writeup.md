@@ -9,7 +9,7 @@ The first method we will investigate is known as the Method of Line. It combines
 
 The process is best demonstrated by looking at an example. We will consider the heat equation in one dimension. 
 ```math
-\partial_t u =\alpha^2 \partial_x^2 \, u 
+\partial_t u =\alpha^2 \, \partial_x^2 \, u 
 ```
 The first step is to discretize our problem over our spatial coordinates.
 ```math
@@ -37,10 +37,10 @@ Moving left or right by a step of size h is equivalent to moving left or right b
 \partial_x^2 u \approx \frac{-u_{k+2}(t) + 16\,u_{k+1}(t) - 30\,u_k(t) + 16\,u_{k-1}(t) - u_{k-2}(t),t)}{12\,h^2}.
 \end{gathered}
 ```
-Thus, we can put this result into the heat equation and obtain an equation for the time derivative of each point in our solution as a funciton of the points around it. 
+Thus, we can put this result into the heat equation and obtain an equation for the time derivative of each point in our solution as a function of the points around it. 
 ```math
 \begin{gathered}
-\frac{d}{dt}u_k(t) =  \frac{-u_k+2(t) + 16\,u_k+1(t) - 30\,u_k(t) + 16\,u_k-1(t) - u_k-2h(t),t)}{12\,h^2}.
+\frac{d}{dt}u_k(t) =  \frac{-u_{k+2}(t) + 16\,u_{k+1}(t) - 30\,u_k(t) + 16\,u_{k-1}(t) - u_{k-2}(t))}{12\,h^2}.
 \end{gathered}
 ```
 We are now done. Instead of a single function of two variables, we now have a system of functions in one variable that are all related through a coupled ODE system. At this point, we can churn this system of ODEs through a known integrator. Each discretized function serves as our approximation of the function around that point in space. This error for this method then comes from the order of your derivative stencil and the order of you ODE integrator.
