@@ -497,3 +497,5 @@ The following works, while not directly cited, were essential in putting togethe
 1) "Exponential Time Differencing for Stiff Systems" by S. M. Cox and P.C. Matthews
 2) "Hydrodynamics of the Kuramoto Sivashinsky Equation in Two Dimensions" by B. M. Boghosian et al.
 3) "An Exponential Time Differencing Scheme for the Kuramoto-Sivashinksy Equation" by G. Zavalani
+
+Also of note is the instagram account "MATH_INFINITUM" for the reel they posted on the Kuramoto-Sivashinksy Equation.
