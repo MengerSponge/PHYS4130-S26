@@ -65,7 +65,7 @@ for method_name, method_func in methods.items():
 
 found_key = ODE_Methods.Find_key(situations, [1, 1, 150, 1, 0, 3000])
 plt.axis('equal')
-plt.title(f'Phase Space of Sitaution {found_key}')
+plt.title(f'Phase Space of N = 3000')
 plt.xlabel('x Values')
 plt.ylabel('p Values')
 plt.legend()
@@ -123,6 +123,40 @@ plt.xlabel('Time')
 plt.ylabel('Relative Error')
 plt.title('Relative Error for Methods Energy vs Time')
 plt.show()
+
+# Compare Time Steps and how that affects the energy drift
+
+N_values = [100, 500, 1000, 3000]
+
+for method_name, method_func in methods.items():
+
+    # We don't care about the analytic for time steps because it shouldn't change
+    if method_name == 'Analytic':
+        continue 
+
+    plt.figure()
+
+    for N in N_values:
+
+        x_array, p_array, t_array = method_func(1, 1, 150, 1, 0, N)
+
+        kinetic, potential, total = ODE_Methods.Total_energy(x_array, p_array, 1)
+
+        energy_drift = []
+
+        for t in total:
+            energy_drift.append(t - total[0])
+
+        h = 150 / N # Time step where 150 is our time duration
+
+        plt.plot(t_array, energy_drift, label=f"N={N}")
+
+    plt.title(f"Energy Drift vs Time for {method_name}")
+    plt.xlabel("Time (s)")
+    plt.ylabel("Energy Drift (E[t] - E[0])")
+    plt.legend()
+    plt.show()
+
 
 # -------------------- Extensions -----------------------------
 
