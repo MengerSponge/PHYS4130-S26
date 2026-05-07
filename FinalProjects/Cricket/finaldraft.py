@@ -10,6 +10,7 @@ from matplotlib import pyplot as plt
 from scipy.integrate import solve_ivp as intg
 import random as ra
 from matplotlib.colors import ListedColormap # for the fractal mapping
+from matplotlib import animation
 from FinalProject_Header import *
 
 # initial conditions
@@ -21,10 +22,10 @@ initial_conditions, solutions = [], []
 # loop over multiple magnet configurations
 magnet_counts = [3, 4, 5, 6, 7, 8]
 
-for idx, N in enumerate(magnet_counts):
-    print("")
-    ax = axes[idx]
+print("")
+print("Generating motion plots...")
 
+for idx, N in enumerate(magnet_counts):
     magnets = generate_polygon_magnets(N)
 
     restoring = 0.0
@@ -33,16 +34,17 @@ for idx, N in enumerate(magnet_counts):
 
     # plot the trajectories for N magnets
     plot_random_trajectories(magnets, f"Trajectories ({N} Magnets)")
+    plt.savefig(f"trajectories_{N}_magnets.png", bbox_inches='tight', dpi=300)
     plt.show()
 
 # generating fractals
 print("")
 print("Generating fractals...")
 fig, axes = plt.subplots(2, 3, figsize=(15, 10))  # 6 plots total
-axes = axes.flatten()
+axes_nn = axes.flatten()
 for idx, N in enumerate(magnet_counts):
 
-    ax = axes[idx] 
+    ax = axes_nn[idx] 
     magnets = generate_polygon_magnets(N)
     restoring = 0.0
     magnetic_strength = 1.2 if N <= 5 else 2.0
@@ -52,11 +54,9 @@ for idx, N in enumerate(magnet_counts):
 
     # color pallette
     base_colors = [
-        '#e6194b', '#3cb44b', '#ffe119', '#4363d8',
-        '#f58231', '#911eb4', '#46f0f0', '#f032e6',
-        '#bcf60c', '#fabebe', '#008080', '#e6beff',
-        '#9a6324', '#fffac8', '#800000', '#aaffc3',
-        '#808000', '#ffd8b1', '#000075', '#808080'
+        '#582c83', '#FFD100', '#0fc7f2', "#49f866",
+        '#fb0cce', '#3e5c1f', '#3e5cf6', '#fe5c1f',
+        '#fc0000', '#fabebe', '#008080', '#e6beff',
     ]
 
     colors = base_colors[:N]  # take first N colors
@@ -65,11 +65,15 @@ for idx, N in enumerate(magnet_counts):
     # plot
     ax.imshow(basins, cmap=custom_cmap,
               extent=[-1.5, 1.5, -1.5, 1.5],
-              origin='lower')
+              origin='lower',
+              vmin=0, vmax=N-1, 
+              interpolation='nearest',
+              aspect='equal') 
 
     ax.imshow(shading, cmap='bone',
               extent=[-1.5, 1.5, -1.5, 1.5],
-              origin='lower', alpha=0.25)
+              origin='lower', alpha=0.25,
+              aspect='equal')
 
     # plot magnets
     for m in magnets:
@@ -80,8 +84,36 @@ for idx, N in enumerate(magnet_counts):
     ax.set_yticks([])
 
 plt.suptitle("Magnetic Pendulum Fractals (Various Magnet Configurations)", fontsize=16)
+plt.savefig("magnetic_pendulum_fractals_grid.png", bbox_inches='tight', dpi=300)
 plt.show()
 
-#################################################################
+# generating animations
+
+print("")
+print("Generating animations...")
+
+configs = [3, 4, 5] # number of magnets
+step_sizes = [512, 2048] # to show how step sizes effects the accuracy
+
+for N in configs:
+    magnets = generate_polygon_magnets(N)
+    restoring = 0.05
+    magnetic_strength = 1.2
+
+    # 3 slightly different initial conditions
+    states = [
+        [-1.2, 1.22, 0.0, 0.0], # RK45
+        [-1.2, 1.20, 0.0, 0.0], # DOP853
+        [-1.2, 1.25, 0.0, 0.0]  # Heun
+    ]
+
+    for steps in step_sizes:
+        filename = f"{N}_magnets_{steps}_steps"
+        animate_integrators(magnets, states, steps, filename)
+
+print("")
+print("Code finished running!")
+
+###############################################################################################################
 # END FINAL PROJECT
-#################################################################
+###############################################################################################################
