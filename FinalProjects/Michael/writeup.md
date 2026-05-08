@@ -297,8 +297,7 @@ By creating some discretization variables, we can rewrite this as an update form
 &\text{Let} \, h ,\ \text{be a time step} \\
 &\text{Let} \, t_n \, = n\,h \\
 &\text{Let} \, u_{n+1} = e^{L\,h}\,u_n + e^{L\,h}\, \int_{0}^{h} e^{-L\tau}\, N(u(x,y,t+\tau,t+\tau)\,d\tau.
-\end{a
-lign*}
+\end{align*}
 ```
 
 Before proceeding, we should note some that we never discetized the operator L. In fact, if there is no nonlinear term, then this method will be exact. We only need to approxmiate in the nonlinear step, which we adress next. 
