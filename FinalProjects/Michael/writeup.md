@@ -510,11 +510,11 @@ https://github.com/user-attachments/assets/2c8d3b6c-598c-4257-ae0e-1bc2f842e83f
 We can kind of see our expected dynamics, but there is this large uniform background that divereges as time goes on. To trouble shoot this, we need to look at any terms in our solution that correspond to a constant term in space. In the fourier series, we see that this term goes with the (0,0) mode. Then, let's compute how this constant term evolves according to the KSE. 
 
 ```math
-\begin{aligned}
+\begin{gathered}
 L \, A_{(0,0)} (t) \, e^{i\,(0*x + 0*y)} = L \, A_{(0,0)} (t) = 0 \, \text{ since L is a spatial differential opeartor} \\
 N(A_{(0,0)} (t) \, e^{i\,(0*x + 0*y)}) = N(A_{(0,0)} (t)) = 0 \, \text{ since N(u) is composed of spatial differential opeartors} \\
 \text{Thus, the (0,0) mode is constant in time. }
-\end{aligned}
+\end{gathered}
 ```
 
 Since our divergence is uniform over space, it seems that the simulation has the wrong time evolution for the constant term. Then, we also observe that our solution diverges slowly over the simulation time. Therefore, we conclude that our approximation for the dynamics of the (0,0) mode is just slightly off form zero in the same direciton at each step. Thus, we accumulate these little errors over enough time to see diveregence. This is an occasional problem with tihs method, and it is easily fixed by enforcing the (0,0) mode to be constant in time inside our step function. 
