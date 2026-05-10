@@ -265,9 +265,9 @@ def animate_integrators(magnets, initial_states, steps, filename_prefix):
     for i, m in enumerate(magnets):
         ax.scatter(m[0], m[1], color='black', s=50, zorder=3)
 
-    rk_line, = ax.plot([], [], color='#71e669', label='RK45 (y0=1.22)')
+    rk_line, = ax.plot([], [], color='#71e669', label='RK45 (y0=1.20)')
     dp_line, = ax.plot([], [], color='blue', label='DOP853 (y0=1.20)')
-    hn_line, = ax.plot([], [], color='red', label='Heun (y0=1.25)')
+    hn_line, = ax.plot([], [], color='red', label='Heun (y0=1.20)')
     ax.legend(loc='upper right')
 
     '''
